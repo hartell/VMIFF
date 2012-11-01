@@ -1,0 +1,22 @@
+# Binary class files
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Entire directories to ignore
+bin/
+gen/
+tmp/
+
+# Eclipse-specific
+*.pydevproject
+.metadata
+*.tmp
+*.bak
+*.swp
+*~.nib
+*.loadpath
+*.cache

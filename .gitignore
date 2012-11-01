@@ -20,3 +20,7 @@ tmp/
 *~.nib
 *.loadpath
 *.cache
+
+# OS stuff
+.DS_Store
+thumbs.db

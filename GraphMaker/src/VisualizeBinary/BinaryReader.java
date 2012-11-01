@@ -30,7 +30,8 @@ public class BinaryReader {
 	private JLabel fileName;
 	private JLabel fileSize;
 	
-	private Graph2D graph;
+	private Graph2D graph2D;
+	private Graph3D graph3D;
 	private JPanel fileInfo;
 	private JPanel graphPanel;
 	
@@ -159,9 +160,11 @@ public class BinaryReader {
 			//Create a scatter plot graph of all the bytes
 			//If the user wants 2D Graph...
 			if(viewType == 2){
-				graph = new Graph2D();
+				//Create a new 2d Graph and remove any old ones.
+				graph2D = new Graph2D();
 				graphPanel.removeAll();
 				
+				//Layout the graph
 				graphPanel.setLayout(new GridBagLayout());
 				GridBagConstraints c = new GridBagConstraints();
 				c.gridx = 0;
@@ -170,13 +173,26 @@ public class BinaryReader {
 				c.weightx = 1.0;
 				c.weighty = 1.0;
 				
-				graphPanel.add(graph.drawGraph(bytes, file.getName()), c);
+				//Add the newly created graph to the graph panel.
+				graphPanel.add(graph2D.drawGraph(bytes, file.getName()), c);
 			}
 			//If the user wants to use the 3D Graph...
 			if(viewType == 3){
-				//my3DGraph = new Graph3D(frame);
-				//my3DGraph.drawGraph(frame, bytes, file.getName());
-				System.out.println("Work in progress");
+				//Create a new 3d Graph and remove any old ones.
+				graph3D = new Graph3D();
+				graphPanel.removeAll();
+				
+				//Layout the 3d Graph
+				graphPanel.setLayout(new GridBagLayout());
+				GridBagConstraints c = new GridBagConstraints();
+				c.gridx = 0;
+				c.gridy = 0;
+				c.fill = GridBagConstraints.BOTH;
+				c.weightx = 1.0;
+				c.weighty = 1.0;
+				
+				//Add the newly created graph to the graph panel.
+				graphPanel.add(graph3D.drawGraph(bytes, file.getName()), c);
 			}
 		}
 	}
@@ -184,7 +200,6 @@ public class BinaryReader {
 	/**
 	 * A Panel to display information about the loaded file or fragment
 	 * Information includes: File Name, Size of File
-	 * TODO
 	 */
 	public void addFileInfo(){
 		//Make a new JPanel & Layout
@@ -281,7 +296,7 @@ public class BinaryReader {
 		JButton button = new JButton ("To Be Completed");
 		navPanel.add(button);
 		
-		//Sets the constraints fro the panel
+		//Sets the constraints for the panel
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = 1;

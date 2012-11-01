@@ -1,7 +1,5 @@
 package VisualizeBinary;
 
-import java.awt.Cursor;
-import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -19,8 +17,8 @@ public class Graph2D {
 	 * Constructor - sets the cursor to a wait icon
 	 * @param frame - - the container in which the wait icon should occur
 	 */
-	public Graph2D (JFrame frame){
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	public Graph2D (){
+		//frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	}
 	
 	/**
@@ -29,8 +27,9 @@ public class Graph2D {
 	 * @param frame - where to draw the graph1
 	 * @param bytes - the bytes to render into the graph
 	 * @param title - the name of the graph (typically the file/fragment name)
+	 * @return 
 	 */
-	public void drawGraph(JFrame frame, byte[] bytes, String title){
+	public ChartPanel drawGraph(byte[] bytes, String title){
 		//Create a new collect for XY points
 		XYSeriesCollection data = new XYSeriesCollection();
 		XYSeries series = new XYSeries("DataSet");
@@ -50,14 +49,7 @@ public class Graph2D {
 		ChartPanel panel = new ChartPanel(scatter, true);
 		
 		//Add the panel to the frame
-		frame.setContentPane(panel);
-		
-		//Remove the wait cursor (as the process has finished);
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		
-		//Repaint frame with newly created chart.
-		frame.validate();
-		frame.repaint();
+		return panel;
 	}
 
 	//Possible Methods:

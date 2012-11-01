@@ -19,8 +19,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-import org.jfree.chart.ChartPanel;
-
 /**
  * This is main class of the binary visualization program.
  * @author Ellen Hartstack
@@ -30,7 +28,6 @@ public class BinaryReader {
 
 	private JFrame frame;
 	private JLabel fileName;
-	private JLabel fileExt;
 	private JLabel fileSize;
 	
 	private Graph2D graph;
@@ -59,10 +56,13 @@ public class BinaryReader {
 		
 		//Add Navigation Panel
 		addNavigationPanel();
+		
+		//Now that all the components are added, revalidate them.
+		frame.validate();
 	}
 	/**
 	 * Creates a the main window menu bar
-	 * File Menu includes: Open, Exit
+	 * File Menu includes: File, Options
 	 */
 	public void makeMenu(){
 		
@@ -96,15 +96,14 @@ public class BinaryReader {
 		fileMenu.add(open3DOpt);
 		
 		//Make a menu item: File -> Close Graph
-		//TODO: Get Close Option to work...
 		JMenuItem closeOpt = new JMenuItem("Close Graph");
 		closeOpt.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0){
-				//Some action
+				clearLoadedFile();
 			}
 		});
-		//fileMenu.add(closeOpt);
+		fileMenu.add(closeOpt);
 		
 		//Make a menu item: File -> Exit
 		JMenuItem exitOpt = new JMenuItem("Exit");
@@ -129,9 +128,10 @@ public class BinaryReader {
 	/**
 	 * Allows the user to select a file to open.
 	 * Currently displays the graph in 2D Mode
-	 * @param viewType - an integer value; 2 = draw 2D graph, 3= draw 3D Graph
+	 * @param viewType - an integer value; 2 = draw 2D graph, 3 = draw 3D Graph
 	 */
 	public void openFile(int viewType){
+		//Create a new JFileChooser and set it's starting directory
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File("C:/SVM/TestFiles/"));
 		int choice = chooser.showOpenDialog(null);
@@ -139,8 +139,8 @@ public class BinaryReader {
 		//Wait until the user has selected a file
 		File file = null;
 		if(choice == JFileChooser.APPROVE_OPTION){
+			//Get the selected File 
 			file = chooser.getSelectedFile();
-			updateFileInfo(file);
 			
 			//Get the path of the file
 			Path path = Paths.get(file.getAbsolutePath());
@@ -153,36 +153,50 @@ public class BinaryReader {
 				e.printStackTrace();
 			}
 			
+			//Update the file's information panel with the new file.
+			updateFileInfo(file, bytes.length);
+			
 			//Create a scatter plot graph of all the bytes
 			//If the user wants 2D Graph...
 			if(viewType == 2){
 				graph = new Graph2D();
 				graphPanel.removeAll();
-				graphPanel.add(graph.drawGraph(bytes, file.getName()));
+				
+				graphPanel.setLayout(new GridBagLayout());
+				GridBagConstraints c = new GridBagConstraints();
+				c.gridx = 0;
+				c.gridy = 0;
+				c.fill = GridBagConstraints.BOTH;
+				c.weightx = 1.0;
+				c.weighty = 1.0;
+				
+				graphPanel.add(graph.drawGraph(bytes, file.getName()), c);
 			}
+			//If the user wants to use the 3D Graph...
 			if(viewType == 3){
 				//my3DGraph = new Graph3D(frame);
 				//my3DGraph.drawGraph(frame, bytes, file.getName());
-				System.out.println("To Be Completed!");
+				System.out.println("Work in progress");
 			}
 		}
 	}
 	
 	/**
-	 * Left hand panel to display information about the file.
+	 * A Panel to display information about the loaded file or fragment
+	 * Information includes: File Name, Size of File
+	 * TODO
 	 */
 	public void addFileInfo(){
 		//Make a new JPanel & Layout
 		fileInfo = new JPanel();
 		fileInfo.setLayout(new GridBagLayout());
-		fileInfo.setBackground(Color.YELLOW);
-
+		fileInfo.setBackground(Color.WHITE);
+		//New GridBagConstraints
 		GridBagConstraints c = new GridBagConstraints();
 		
 		//Make Labels
 		JLabel title = new JLabel("File Information: ");
-		fileName = new JLabel("Name: No File Loaded");
-		fileExt = new JLabel ("Type: N/A");
+		fileName = new JLabel("File: No File Loaded");
 		fileSize = new JLabel("Size: N/A");
 		
 		//Add labels to panel;
@@ -193,9 +207,6 @@ public class BinaryReader {
 		c.gridy = 1;
 		fileInfo.add(fileName, c);
 		c.gridy = 2;
-		c.weighty = 0;
-		fileInfo.add(fileExt, c);
-		c.gridy = 3;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		fileInfo.add(fileSize, c);
@@ -211,18 +222,41 @@ public class BinaryReader {
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		frame.getContentPane().add(fileInfo, c);		
 	}
-	
-	public void updateFileInfo(File file){
-		fileName.setText("Name: " + file.getName());
-		//TODO: Fix this path!
-		fileExt.setText("Type: " + ".txt");
-		//TODO: Fix this size!
-		fileSize.setText("Size: " + "1000 bytes");
+	/**
+	 * Update the file info panel with information about the loaded file
+	 * @param file - the file to be loaded
+	 * @param length - the length (in bytes) of this file
+	 */
+	public void updateFileInfo(File file, int length){
+		fileName.setText("File: " + file.getName());
+		fileSize.setText("Size: " + length + " bytes");
 	}
 	
+	/**
+	 * Clears all information about a file
+	 * Used when the open file is closed.
+	 */
+	public void clearLoadedFile(){
+		//Remove all components in the graph Panel
+		graphPanel.removeAll();
+		
+		//Change the labels back to defaults
+		fileName.setText("File: No File Loaded");
+		fileSize.setText("Size: N/A");
+		
+		//Update the frame
+		frame.validate();
+		frame.repaint();
+	}
+	
+	/**
+	 * Adds the graph Panel where the visual data will be drawn.
+	 */
 	public void addGraphPanel(){
+		//Panel for the graph
 		graphPanel = new JPanel();
 		
+		//Layout the graph
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = 0;
@@ -231,28 +265,34 @@ public class BinaryReader {
 		c.anchor = GridBagConstraints.PAGE_START;
 		c.fill = GridBagConstraints.BOTH;
 
+		//Add graphPanel to frame
 		frame.getContentPane().add(graphPanel, c);
 	}
 	
-	
+	/**
+	 * Adds the navigationPanel - yet to be implemented fully.
+	 * More of a placeholder
+	 */
 	public void addNavigationPanel(){
+		//New navPanel
 		JPanel navPanel = new JPanel();
 		navPanel.setBackground(Color.RED);
 		
-		JButton button = new JButton ("C Button");
+		JButton button = new JButton ("To Be Completed");
 		navPanel.add(button);
 		
+		//Sets the constraints fro the panel
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
+		//Adds the panel to the frame
 		frame.getContentPane().add(navPanel, c);
 	}
 	
-	
 	/**
-	 * This method will start up the program.
+	 * Main - This method will start up the program.
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {		

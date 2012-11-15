@@ -14,13 +14,13 @@ import java.nio.file.Paths;
  * @author hartell
  *
  */
-public class FeaturesUtil {
+public class FeatureUtils {
 	
 	/**
 	 * A method which gets the average byte value
 	 * @return - the average byte value
 	 */
-	public int getAvgByte(File f){
+	public static int getAvgByte(File f){
 		
 		//Get the path of the file
 		Path path = Paths.get(f.getAbsolutePath());
@@ -40,7 +40,7 @@ public class FeaturesUtil {
 		}
 		
 		avg = avg / 512;
-		System.out.println("Average Bytes: " + avg);
+		//System.out.println("Average Bytes: " + avg);
 		
 		return avg;
 	}

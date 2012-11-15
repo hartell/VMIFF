@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -28,6 +29,7 @@ public class Fragmenter {
 		
 		//Create a new file chooser based for either directories or files.
 		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File("H://SVM/"));
 		if(answer == 0){
 			System.out.println("User selected a fragment a Directory");
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -52,47 +54,67 @@ public class Fragmenter {
 				File dir = chooser.getSelectedFile();
 				System.out.println("Dir Path: " + dir.getAbsolutePath());
 				if(dir.isDirectory()){
-					String[] fileList = dir.list();
-					files = new File[fileList.length];
-					for(int i = 0; i < fileList.length; i++){
-						files[i] = new File(dir.getAbsolutePath() + File.separatorChar + fileList[i]);
-						System.out.println("Adding: " + new File(fileList[i]).getAbsolutePath());
+					File[] listOfFiles = dir.listFiles();
+					ArrayList<File> tempFileHolder = new ArrayList<File>();
+					for(File f : listOfFiles){
+						if(!f.isDirectory()){
+							tempFileHolder.add(f);
+						}
 					}
+					
+					files = new File[tempFileHolder.size()];
+					for(int i = 0; i < tempFileHolder.size(); i++){
+						files[i] = tempFileHolder.get(i);
+					}
+					System.out.println(files.length);
 				}
 				else
 					System.out.println("Directory not selected");
 			}
 			
+			//Create a Directory to put the file fragments in if it's not already there...
+			File output = new File(files[0].getParentFile() + "\\Fragmented");
+			
+			// create a directory to put file fragments in if its not already there
+			if(!output.isDirectory()){
+				output.mkdirs();
+			} 
+			else if(output.isDirectory()){
+				//Ask user if they want to delete currently existing fragments
+				int emptyFolder = JOptionPane.showConfirmDialog(null, "Delete current Fragments?", "Delete?", JOptionPane.YES_NO_OPTION);
+				
+				//TODO: Delete files in Directory
+				if(emptyFolder == JOptionPane.YES_OPTION){
+					System.out.println("Deleting Old Fragments");
+					//Empty the folder
+					File[] fileList = output.listFiles();
+					for(File myFile : fileList){
+						System.out.println("Trying to delete: " + myFile.getAbsolutePath());
+						myFile.delete();
+					}
+				}
+				else{
+					//Leave the folder and start off numbering where you left off.
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Output directory is not a directory!");
+			}
+			
 			int i = 1;
-			int fragCounter = 0;
+			int fragCounter = 1;
 			for(File f : files){
 				System.out.println("Fragmenting file #" + i);
-				int temp = fragmentFile(f, new File(f.getParentFile() + "\\Fragmented"), fragCounter);
+				System.out.println("Input: " + f.getAbsolutePath());
+				System.out.println("Output: " + f.getParentFile() + "\\Fragmented");
+				int temp = fragmentFile(f, output, fragCounter);
 				fragCounter = temp;
 				i++;
 			}
 		}
 	}
 	
-	public static int fragmentFile(File input, File output, int fragCounter){
-		System.out.println("Input: " + input.getAbsolutePath());
-		System.out.println("Output: " + output.getAbsolutePath());
-		
-		// create a directory to put file fragments in if its not already there
-		if(!output.isDirectory()){
-			output.mkdirs();
-		} 
-		else if(output.isDirectory()){
-			//Ask user if they want to delete currently existing fragments
-			//int emptyFolder = JOptionPane.showConfirmDialog(null, "Delete current Fragments?", "Delete?", JOptionPane.YES_NO_OPTION);
-			//TODO: Delete files in Directory
-			
-			//TODO or leave them...
-		}
-		else {
-			throw new IllegalArgumentException("Output directory is not a directory!");
-		}
-		
+	public static int fragmentFile(File input, File output, int fragCounter){	
 		int fileCounter = fragCounter;
 		//Create a randomAccessFile to fragment from
 		try {

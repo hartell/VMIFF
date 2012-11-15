@@ -1,0 +1,149 @@
+; rate_comparisons_co.pro
+;
+; test the measured count rates for the block 6 co57 runs
+; to see if they match the predicted total count rates
+
+; Do this when printing to x window
+
+red=255L
+
+; Do these when printing to ps file
+
+;r=[0,1]
+;g=[0,0]
+;b=[0,0]
+;set_plot,'ps'
+;tvlct,255*r,255*g,255*b
+;red=1
+
+; items to change from run to run
+
+filename="blk_6_co57_200_20_0_0_021126_1"
+intensity_122=2.18e6   ; co-57-120 122 keV photons/s in 4 pi on 11/26/02
+intensity_136=2.74e5   ; co-57-120 136 keV photons/s in 4 pi on 11/26/02
+theta=0
+
+; items constant for Co57 runs in block 6
+
+dpi_dir="/local/data/gris1h/block_cal/Block_6/raw/"
+title1="Co57"
+ps_filename=filename+"_rate_comparison.ps"
+
+; calculate source position (in cartesian)
+; (add 0.01 to avoid divide-by-zero problems that can come up)
+
+source_x=-100*sin(theta*3.14159/180.)+0.01
+source_y=0.01
+source_z=100*cos(theta*3.14159/180.)
+
+; print source position
+
+print, "source position:"
+print, "  x: ",source_x
+print, "  y: ",source_y
+print, "  z: ",source_z
+print, "  tan(theta): ",sqrt(source_x*source_x+source_y*source_y)/$
+      sqrt(source_x*source_x+source_y*source_y+source_z*source_z)
+
+; create a good_map that includes only center detectors
+
+good_map=intarr(34,85)+1
+good_map[0,*]=0
+good_map[15:18,*]=0
+good_map[33,*]=0
+for n=0,7 do good_map[*,11*n]=0
+for n=0,7 do good_map[*,11*n+7]=0
+for n=0,6 do good_map[*,11*n+8]=0
+for n=0,6 do good_map[*,11*n+9]=0
+for n=0,6 do good_map[*,11*n+10]=0
+
+; make detx and dety (images)
+
+detx=fltarr(34,85)
+for i=0,84 do detx[*,i]=findgen(34)
+detx=0.42*(temporary(detx)-16.5)
+
+dety=fltarr(34,85)
+for i=0,33 do dety[i,*]=findgen(85)
+dety=0.42*(temporary(dety)-42)
+
+; make detector flat-fielding correction (cos_factor and r2)
+
+relative_x=source_x-detx
+relative_y=source_y-dety
+relative_z=source_z
+
+temp1=0.05*abs(relative_z/relative_x)
+temp2=0.05*abs(relative_z/relative_y)
+
+cos_factor=$
+  cos(atan(sqrt(relative_x*relative_x+relative_y*relative_y)/relative_z))+$
+  ((temp1 lt 0.5)*temp1+(temp1 ge 0.5)*0.5)*$
+  cos(atan(sqrt(relative_y*relative_y+relative_z*relative_z)/relative_x))+$
+  ((temp2 lt 0.5)*temp2+(temp2 ge 0.5)*0.5)*$
+  cos(atan(sqrt(relative_x*relative_x+relative_z*relative_z)/relative_y))
+
+r2=relative_x*relative_x+relative_y*relative_y+relative_z*relative_z
+
+; make CZT quantum efficiency factor
+
+top_cos=cos(atan(sqrt(relative_x*relative_x+relative_y*relative_y)/relative_z))
+qe_122=1-exp(-4.655*0.2/top_cos)
+qe_136=1-exp(-3.374*0.2/top_cos)
+
+; make attenuation factor
+
+f_122=.979
+f_136=.979
+
+; a couple of other constants
+
+fourpi=12.5663706144
+area=0.16
+
+; predicted individual rates
+
+rates_predicted=$
+  intensity_122/fourpi/r2*f_122*cos_factor*area*qe_122+$
+  intensity_136/fourpi/r2*f_122*cos_factor*area*qe_136
+
+; measurement
+
+; make arrays of counts and count rates (from dpi)
+; note: when making a dpi from a single block calibration file,
+; you must first change the BLOCK_ID keywords in the SPECTRUMXXX headers
+; to the appropriate number (for block 6, BLOCK_ID = 11)
+
+dpi_big=readfits(dpi_dir+filename+".dpi",exten_no=0)
+exposure=(mrdfits(dpi_dir+filename+".dpi",1)).exposure
+if (max(exposure) ne min(exposure)) then $
+  print, "WARNING: max(exposure) ne min(exposure)" 
+print, "min(exposure): ",min(exposure) 
+print, "max(exposure): ",max(exposure)
+rates_big=dpi_big/max(exposure)
+rates=rates_big[108:141,0:84]
+
+; histograms 
+
+;set_plot,'ps'
+;device,filename=ps_filename,/color
+;plot,indgen(400)*0.01,histogram(rates,binsize=0.01),yrange=[0,500],$
+;  xtitle="counts/s",$
+;  title=title1+": Number of detectors per bin!Cbin size: 0.01 counts/s",$
+;  ymargin=[4,4]
+;oplot,indgen(400)*0.01,histogram(rates_predicted,binsize=0.01,min=0),color=red
+;device,/close
+;set_plot,'x'
+
+; construct a "good index table"
+
+good_ind=where((rates*good_map gt 0.5) and (rates*good_map lt 3))
+
+; averages
+
+print,mean(rates[good_ind])
+print,mean(rates_predicted[good_ind])
+
+print,"ratio:",mean(rates[good_ind])/mean(rates_predicted[good_ind])
+
+end

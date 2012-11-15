@@ -1,0 +1,79 @@
+[Federal Register: August 21, 2000 (Volume 65, Number 162)]
+[Notices]
+[Page 50723-50724]
+From the Federal Register Online via GPO Access [wais.access.gpo.gov]
+[DOCID:fr21au00-110]
+
+=======================================================================
+-----------------------------------------------------------------------
+
+POSTAL SERVICE
+
+
+Plan for Secure Postage Meter Technology
+
+AGENCY: Postal Service.
+
+[[Page 50724]]
+
+ACTION: Notice of proposed plan with request for comments.
+
+-----------------------------------------------------------------------
+
+SUMMARY: The Postal Service recently completed the first phase of a
+plan to remove insecure postage meters from the marketplace with the
+decertification of mechanical postage meters. The proposed plan for the
+second phase, the retirement of manually reset electronic meters, was
+published for comment May 1, 2000. While these comments are under
+review, the Postal Service is publishing notice of additional phases of
+the proposed plan for secure postage meter technology. Upon completion
+of the phases of this plan all meters in service will offer enhanced
+levels of security, thereby greatly reducing the Postal Service's
+exposure to meter fraud, misuse, and loss of revenue.
+
+DATES: Comments must be received October 5, 2000.
+
+ADDRESSES: Written comments should be sent to the Manager, Postage
+Technology Management, U.S. Postal Service, Room 8430, 475 L'Enfant
+Plaza SW, Washington DC 20260-2444. Copies of all written comments will
+be available at the above address for inspection and photocopying
+between 9 a.m. and 4 p.m. Monday through Friday at the above address.
+
+FOR FURTHER INFORMATION CONTACT: Nicholas S. Stankosky, (202) 268-5311.
+
+SUPPLEMENTARY INFORMATION: In 1996 the Postal Service, in cooperation
+with all authorized postage meter manufacturers, began a phaseout, or
+decertification, of all mechanical postage meters because of identified
+cases of indiscernible tampering and misuse. Postal revenues were
+proven to be at serious risk. The completion of this effort, which
+resulted in the withdrawal of 776,000 mechanical meters from service,
+completed Phase I of the Proposed Plan for Secure Technology. Phase II
+of the Proposed Plan, the retirement of electronic meters that are
+manually set by postal employees, was described in the Federal Register
+on May 1, 2000. Additional phases of the Proposed Plan are described in
+the current notice.
+    It is the Postal Service's intent to make this an orderly process
+that minimizes impacts on meter users. Notification of additional
+phases of the proposed plan is published at this time to give both
+postage meter manufacturers and postage meter users ample time to make
+timely and intelligent decisions on the selection of postage meters and
+associated mailing equipment. Given the rapid pace of new technological
+developments for secure postage meter technology, meter manufacturers
+should not offer, and customers should not accept, leases for postage
+meter equipment of more than five (5) years' duration.
+    Phases III and IV of the Postal Service proposed plan for secure
+postage meter technology affect non-digital, or letterpress, meters
+that are remote set under the Computerized Meter Resetting System
+(CMRS). If such a meter has a timeout feature, which automatically
+disables the meter if it is not reset within a specified time period,
+it is called an enhanced meter. Phase III of the proposed plan is to
+end the placement of non-enhanced CMRS letterpress meters by June 2001.
+Phase IV of the proposed plan is to end the placement of enhanced CMRS
+letterpress meters by December 2003.
+    A final plan will be published after all comments have been
+received and reviewed by the Postal Service.
+
+Stanley F. Mires,
+Chief Counsel, Legislative.
+[FR Doc. 00-21160 Filed 8-18-00; 8:45 am]
+BILLING CODE 7710-12-U

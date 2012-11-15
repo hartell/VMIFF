@@ -1,0 +1,46 @@
+2/1/2007. This file will no longer be updated after 5/1/2007.
+Current information for this station now and after 5/1/2007 in exactly the same format can be obtained using: http://raws.wrh.noaa.gov/cgi-bin/roman/raws_flat.cgi?stn=DUCC1
+Since the RAWS observations are updated hourly, do not call this script for each station multiple times per hour.
+For more complete information for this station, go to http://raws.wrh.noaa.gov/cgi-bin/roman/meso_base.cgi?stn=DUCC1
+
+
+Station                 GOES ID  Elev   Lat       Long
+===========================================================
+CA DUNCAN               3274731C 7100   39:08:38  120:30:32
+
+                                       Dew                   Fuel   Peak  Bat  Fuel
+                        Day/Time   Tmp Pt  Wind   Pcpn Rh    Temp   Wind  Volt Moist
+====================================================================================
+CA DUNCAN                14/2005Z   49/ 16/3408/ 11.12 RH 27 FT 36/ 30G10 14.0 FM 47 SR 874
+CA DUNCAN                14/1905Z   49/ 25/0603/ 11.12 RH 38 FT 34/ 09G14 14.1 FM 45 SR 786
+CA DUNCAN                14/1505Z   27/ 17/2020/ 11.12 RH 65 FT 20/ 09G42 12.7 FM 23 SR   3
+CA DUNCAN                14/1405Z   26/ 17/1815/ 11.12 RH 68 FT 22/ 14G36 12.6 FM 23 SR   0
+CA DUNCAN                14/1305Z   26/ 20/3112/ 11.12 RH 79 FT 23/ 10G55 12.7 FM 24 SR   0
+CA DUNCAN                14/1205Z   26/ 21/1516/ 11.12 RH 81 FT 23/ 09G46 12.7 FM 24 SR   0
+CA DUNCAN                14/1105Z   26/ 22/2024/ 11.12 RH 86 FT 23/ 05G66 12.6 FM 24 SR   0
+CA DUNCAN                14/1005Z   27/ 23/2120/ 11.12 RH 83 FT 23/ 03GMM 12.7 FM 24 SR   0
+CA DUNCAN                14/0905Z   26/ 23/2011/ 11.12 RH 89 FT 23/ 00GMM 12.7 FM 24 SR   0
+CA DUNCAN                14/0805Z   26/ 25/1142/ 11.12 RH 96 FT 24/ 21GMM 12.7 FM 24 SR   0
+CA DUNCAN                14/0705Z   26/ 26/3240/ 11.12 RH100 FT 24/ 03G19812.8 FM 24 SR   0
+CA DUNCAN                14/0605Z   26/ 26/1136/ 11.12 RH100 FT 24/ 21GMM 12.7 FM 24 SR   0
+CA DUNCAN                14/0505Z   26/ 26/1310/ 11.12 RH100 FT 25/ 01GMM 12.8 FM 24 SR   0
+CA DUNCAN                14/0405Z   27/ 27/0619/ 11.12 RH100 FT 26/ 03GMM 12.8 FM 25 SR   0
+CA DUNCAN                14/0305Z   31/ 31/2751/ 11.12 RH100 FT 28/ MMG51 12.9 FM 26 SR   0
+CA DUNCAN                14/0205Z   32/ 32/2830/ 11.12 RH100 FT 32/ MMG30 12.9 FM 32 SR   7
+CA DUNCAN                14/0105Z   32/ 32/2630/ 11.12 RH100 FT 33/ 16G18313.3 FM 52 SR 127
+CA DUNCAN                14/0005Z   35/ 35/2812/ 11.12 RH100 FT 33/ MMG11213.7 FM 54 SR 347
+CA DUNCAN                13/2305Z   36/ 36/2870/ 11.12 RH100 FT 33/ MMG70 14.2 FM 54 SR 472
+CA DUNCAN                13/2205Z   34/ 34/2870/ 11.12 RH100 FT 32/ MMG70 14.1 FM 54 SR 842
+CA DUNCAN                13/2105Z   34/ 34/2669/ 11.11 RH100 FT 32/ 00G14614.1 FM 53 SR 798
+CA DUNCAN                13/2005Z   34/ 34/2887/ 11.11 RH100 FT 32/ MMG87 14.1 FM 52 SR 807
+CA DUNCAN                13/1905Z   34/ 34/2868/ 11.11 RH100 FT MM/ MMG68 14.2 FM 41 SR 677
+CA DUNCAN                13/1805Z   33/ 33/2868/ 11.11 RH100 FT 32/ MMG68 14.2 FM 29 SR 484
+CA DUNCAN                13/1705Z   28/ 28/0368/ 11.11 RH100 FT 28/ 03G70 14.2 FM 26 SR 205
+CA DUNCAN                13/1605Z   25/ 25/0851/ 11.11 RH100 FT 25/ MMGMM 13.0 FM 24 SR  MM
+CA DUNCAN                13/1505Z   23/ 23/0810/ 11.11 RH100 FT 25/ 21G13812.4 FM 24 SR   1
+CA DUNCAN                13/1405Z   23/ 23/2812/ 11.11 RH100 FT 24/ MMG12112.5 FM 24 SR   0
+CA DUNCAN                13/1305Z   23/ 23/2812/ 11.11 RH100 FT 25/ MMG12112.5 FM 25 SR   0
+CA DUNCAN                13/1205Z   24/ 24/2812/ 11.11 RH100 FT 25/ MMG12112.5 FM 25 SR   0
+CA DUNCAN                13/1105Z   25/ 25/2812/ 11.11 RH100 FT 26/ MMG12112.6 FM 25 SR   0
+CA DUNCAN                13/1005Z   25/ 25/2812/ 11.11 RH100 FT 26/ MMG12112.5 FM 25 SR   0
+CA DUNCAN                13/0905Z   24/ 24/2812/ 11.11 RH100 FT 27/ MMG12112.6 FM 26 SR   0

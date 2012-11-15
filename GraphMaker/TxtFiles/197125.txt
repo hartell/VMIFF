@@ -1,0 +1,25 @@
+#SampleID	SMCOD	STAID	Reach	CollectionDate	Phylum	Class	Order	SubOrder	Family	SubFamily	Tribe	Genus	Species	BU_ID	SortCode	Lifestage	Notes	LabCount	Abundance
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Platyhelminthes	Turbellaria								Turbellaria	8000014			7	7
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Bryozoa									Bryozoa	8000025			6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Annelida	Oligochaeta	Tubificida	Tubificina	Naididae					Naididae	8000394			29	29
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Annelida	Oligochaeta	Enchytraeida		Enchytraeidae					Enchytraeidae	8000408			6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Arachnida								Acari	8000452			6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Malacostraca	Isopoda	Asellota	Asellidae			Caecidotea		Caecidotea sp.	8000583			29	29
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Ephemeroptera	Pisciforma	Baetidae					Centroptilum/Procloeon sp.	8000877	L		12	12
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Ephemeroptera	Pisciforma	Baetidae			Baetis		Baetis sp.	8000890	L		17	17
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Ephemeroptera	Pisciforma	Baetidae			Baetis	Baetis intercalaris	Baetis intercalaris McDunnough	8000899	L		117	117
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Ephemeroptera	Setisura	Heptageniidae					Heptageniidae	8000961	L	imm.; dam.	29	29
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Ephemeroptera	Setisura	Heptageniidae			Stenacron		Stenacron sp.	8000995	L		12	12
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Ephemeroptera	Setisura	Heptageniidae			Stenacron	Stenacron interpunctatum	Stenacron interpunctatum (Say)	8001001	L		1	1
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Odonata	Zygoptera	Calopterygidae			Hetaerina		Hetaerina sp.	8001051	L		6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Hemiptera	Heteroptera	Gerridae	Rhagodotarsinae		Rheumatobates		Rheumatobates sp.	8001638	L		6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Trichoptera	Annulipalpia	Hydropsychidae	Hydropsychinae		Cheumatopsyche		Cheumatopsyche sp.	8002023	L		18	18
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Coleoptera	Polyphaga	Hydrophilidae			Paracymus		Paracymus sp.	8002693	A		6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae					Chironomidae	8002894	L	dam.	6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Chironominae	Chironomini			Chironomini	8002897	L	mount	6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Chironominae	Chironomini	Glyptotendipes		Glyptotendipes sp.	8002945	L		6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Chironominae	Chironomini	Polypedilum		Polypedilum sp.	8002994	L		1584	1584
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Chironominae	Chironomini	Stenochironomus		Stenochironomus sp.	8003019	L		17	17
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Orthocladiinae		Brillia		Brillia sp.	8003179	L		6	6
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Orthocladiinae		Rheocricotopus		Rheocricotopus sp.	8003330	L		17	17
+22447	UIRB0700IRM4018	05536236	A	7/12/2000 8:00:00 AM	Arthropoda	Insecta	Diptera	Nematocera	Chironomidae	Tanypodinae	Pentaneurini			Thienemannimyia group sp. (Coffman and Ferrington, 1996)	8003412	L		17	17

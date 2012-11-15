@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -36,6 +37,11 @@ public class Fragmenter {
 		if(answer == 0){
 			System.out.println("User selected a fragment a Directory");
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		}
+		//If the user quits, shut down the program
+		else if(answer == JOptionPane.CLOSED_OPTION){
+			System.out.println("User Quit");
+			System.exit(0);
 		}
 		//Otherwise fragment the files they selected...
 		else{
@@ -80,8 +86,9 @@ public class Fragmenter {
 				}
 			}
 			
-			//Create a Directory to put the file fragments
+			//Create a Directory to put the file fragments, start naming at fragment1
 			File output = new File(files[0].getParentFile() + "\\Fragmented");
+			int fragCounter = 1;
 			
 			//Check to see if the directory exists...
 			//If not, make it.
@@ -105,8 +112,32 @@ public class Fragmenter {
 						}
 					}
 				}
+				//If the user quits, shut down the program
+				else if(emptyFolder == JOptionPane.CLOSED_OPTION){
+					System.out.println("User Quit");
+					System.exit(0);
+				}
+				//Leave the current fragments alone and start off numbering where you left off.
 				else{
-					//Leave the folder and start off numbering where you left off.
+					//Grab all the files
+					File[] theFragments = output.listFiles();
+					//Arrays.sort(theFragments);
+					
+					ArrayList<Integer> theNums = new ArrayList<Integer>();
+					//Get all the files' indexes
+					for(File f : theFragments){
+						String name = f.getName();
+						String lastNum = name.substring(4, name.length());
+						theNums.add(Integer.parseInt(lastNum));
+					}
+					
+					//Sort the list lowest to greatest
+					Collections.sort(theNums);
+					
+					//Set the counter to the next available index
+					fragCounter = theNums.get(theNums.size()-1) + 1;
+					System.out.println("Next frag = " + fragCounter);
+					
 				}
 			}
 			else {
@@ -116,7 +147,6 @@ public class Fragmenter {
 			
 			//Iterate through the files the user wants to fragment, name them fragment + (fragCounter - aka wherever the last filename left off);
 			int i = 1;
-			int fragCounter = 1;
 			for(File f : files){
 				System.out.println("Fragmenting file #" + i);
 				System.out.println("Input: " + f.getAbsolutePath());
@@ -125,6 +155,11 @@ public class Fragmenter {
 				fragCounter = temp;
 				i++;
 			}
+		}
+		//If the user quits, shut down the program
+		else if(selection == JFileChooser.CANCEL_OPTION){
+			System.out.println("User Quit");
+			System.exit(0);
 		}
 		System.out.println("Fragmentation Complete");
 	}
@@ -148,7 +183,7 @@ public class Fragmenter {
 				byte[] buffer = new byte[512];
 				file.readFully(buffer);
 				//Output the 512 byte fragment to a incremented file named Fragment + fileCount
-				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Fragmented" + fileCounter));
+				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
 				fileCounter++;
 				out.write(buffer);
 				out.close();
@@ -160,7 +195,7 @@ public class Fragmenter {
 				int end = (int) (file.length() - 1 - file.getFilePointer());
 				file.readFully(buffer, 0 , end);
 				//Output the 512 byte fragment to a incremented file named Fragment + fileCount
-				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Fragmented" + fileCounter));
+				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
 				fileCounter++;
 				out.write(buffer);
 				out.close();

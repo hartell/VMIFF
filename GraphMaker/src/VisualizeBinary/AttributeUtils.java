@@ -14,7 +14,7 @@ import java.nio.file.Paths;
  * @author hartell
  *
  */
-public class FeatureUtils {
+public class AttributeUtils {
 	
 	/**
 	 * A method which gets the average byte value

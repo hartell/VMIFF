@@ -5,7 +5,7 @@ package VisualizeBinary;
 
 import java.io.File;
 import java.util.ArrayList;
-
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -17,9 +17,7 @@ import javax.swing.JOptionPane;
 public class ArffGenerator {
 	
 	private static ArrayList<File> fragDirs;
-	private static ArrayList<String> arffFile;
 	
-
 	/**
 	 * MAIN
 	 * @param args
@@ -27,8 +25,8 @@ public class ArffGenerator {
 	public static void main(String[] args) {
 		System.out.println("Please select a dataset to load...");
 		
+		//Declare Globals
 		fragDirs = new ArrayList<File>();
-		arffFile = new ArrayList<String>();
 		
 		//Ask the user to build their dataSets by adding fragmented Files
 		boolean done = false;
@@ -37,21 +35,25 @@ public class ArffGenerator {
 		}
 		System.out.println("Dataset size = " + fragDirs.size());
 		
-		//Ask the user what metrics they want to run on the files
-		//TODO: Maybe JCheckBox?
-		//		JCheckBox avgBytes = new JCheckBox("Average Bytes");
-		//		JFrame myFrame = new JFrame("Select Attributes");
-		//		myFrame.getContentPane().add(avgBytes);
-		//		myFrame.setVisible(true);
-		//		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
 		//Ask users what they want this relation called (@relation)
 		String rName = JOptionPane.showInputDialog("Name of Relation?");
 		System.out.println("@RELATION " + rName);
 		
 		System.out.println("");
-		
+
+		//TODO: Ask the user what metrics they want to run on the files	
+		ArrayList<JCheckBox> theBoxes = new ArrayList<JCheckBox>();
+	    theBoxes.add(new JCheckBox("Average Bytes"));  
+	    theBoxes.add(new JCheckBox("Feature A"));
+	    theBoxes.add(new JCheckBox("Feature B"));
+	    String message = "Which attributes/features would you like to calculate?";  
+	    Object[] params = new Object[theBoxes.size() + 1];
+	    params[0] = message;
+	    for(int i = 0; i < theBoxes.size(); i++){
+	    	params[i+1] = theBoxes.get(i);
+	    }
+	    JOptionPane.showOptionDialog(null, params, "Available attributes:", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"OK"}, "default");
+	    
 		//TODO: Create the @Attributes section of Arff file
 		System.out.println("@ATTRIBUTE fName string");
 		System.out.println("@ATTRIBUTE avgBytes numeric");
@@ -72,7 +74,7 @@ public class ArffGenerator {
 				//Grab each file
 				File f = files[j];
 				//Run metric
-				int avg = FeatureUtils.getAvgByte(f);
+				int avg = AttributeUtils.getAvgByte(f);
 				//Output value -- fName, avg, type(i + 1)
 				System.out.println(f.getName() + "," + avg + "," + (i + 1));
 			}

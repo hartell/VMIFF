@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 
 /**
  * This class will take a single file, multiple files or an entire directory and fragment it into 512 byte fragments.
- * If a file is less than the 512 byte section, it fills the end in with zeros. (not sure if proper way to do this...)
  * @author hartell
  */
 public class Fragmenter {

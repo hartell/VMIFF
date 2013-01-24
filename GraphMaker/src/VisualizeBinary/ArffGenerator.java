@@ -190,10 +190,12 @@ public class ArffGenerator {
 	}
 	
 	/**
-	 * Generates and saves the Arff File
+	 * Generates and saves the Arff File to a predetermined location
+	 * @param name - the name of the arff File
 	 */
 	public static void makeArffFile(String name){
 		try{
+			//Create a Writer, write each line out to a file.
 			FileWriter fStream = new FileWriter("H://SVM/ARFF/" + name + ".arff");
 			BufferedWriter out = new BufferedWriter(fStream);
 			for(String s : arffFile){
@@ -201,6 +203,7 @@ public class ArffGenerator {
 				out.newLine();
 			}
 			out.close();
+			fStream.close();
 		}
 		catch(Exception e){
 			e.printStackTrace();

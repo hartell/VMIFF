@@ -134,7 +134,7 @@ public class BinaryReader {
 	public void openFile(int viewType){
 		//Create a new JFileChooser and set it's starting directory
 		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File("C:/SVM/TestFiles/"));
+		chooser.setCurrentDirectory(new File("H://SVM"));
 		int choice = chooser.showOpenDialog(null);
 		
 		//Wait until the user has selected a file

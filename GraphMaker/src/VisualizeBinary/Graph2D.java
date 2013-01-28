@@ -45,10 +45,11 @@ public class Graph2D {
 			
 		for(int i = 0; i < bytes.length - 1; i= i+2){
 			//Get x and y values
-			x = bytes[i];
-			y = bytes[i+1];
+			x = Matrix.unsignByte(bytes[i]);
+			y = Matrix.unsignByte(bytes[i+1]);
 			//Add x, y to series.
 			series.add(x, y);
+			System.out.println(x + "," + y);
 		}
 
 		//Add the series to the collection

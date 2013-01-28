@@ -6,10 +6,18 @@ package VisualizeBinary;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import VisualizeBinary.Features.Feature;
+import VisualizeBinary.Features.PercentageFeature;
+import VisualizeBinary.Features.TotalFeature;
+import VisualizeBinary.Matrix.Matrix;
 
 /**
  * This class will allow users to generate an .arff file from fragments
@@ -45,9 +53,8 @@ public class ArffGenerator {
 
 		//Ask the user what metrics they want to run on the files	
 		ArrayList<JCheckBox> theBoxes = new ArrayList<JCheckBox>();
-	    theBoxes.add(new JCheckBox("Average Bytes"));  
-	    theBoxes.add(new JCheckBox("Feature A"));
-	    theBoxes.add(new JCheckBox("Feature B"));
+	    theBoxes.add(new JCheckBox("Total Feature"));  
+	    theBoxes.add(new JCheckBox("Percentage Feature"));
 	    String message = "Which attributes/features would you like to calculate?";  
 	    Object[] params = new Object[theBoxes.size() + 1];
 	    params[0] = message;
@@ -56,8 +63,8 @@ public class ArffGenerator {
 	    }
 	    JOptionPane.showOptionDialog(null, params, "Available attributes:", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"OK"}, "default");
 	    
-		//Create the @Attributes section of Arff file
-	    createAttributes(theBoxes);
+		//Create the @Attributes section of Arff file, with a specifed granularity (if needed)
+	    createAttributes(theBoxes, 1);
 
 		// Run the metrics on the file
 		// For each directory of fragments...
@@ -76,7 +83,7 @@ public class ArffGenerator {
 		}
 		
 		
-		//TODO: Write out the newly created Arff file
+		//Write out the newly created Arff file
 		makeArffFile(rName);
 		
 	}
@@ -127,7 +134,7 @@ public class ArffGenerator {
 	 * Example: @ ATTRIBUTE avgBytes numeric
 	 * @param theBoxes
 	 */
-	public static void createAttributes(ArrayList<JCheckBox> theBoxes){
+	public static void createAttributes(ArrayList<JCheckBox> theBoxes, int granularity){
 		
 		//Add in a file about the fileName (key attribute) -- will be removed from within weka
 		arffFile.add("@ATTRIBUTE fName string");
@@ -141,7 +148,11 @@ public class ArffGenerator {
 			
 			//Add the attribute to the arff file:
 			if(b.isSelected()){
-				arffFile.add("@ATTRIBUTE " + aName + " numeric");
+				int totalNumAttributes = (int) Math.pow(4, granularity);
+				for(int i = 0 ; i < totalNumAttributes; i++){
+					//Add an attribute for each granularity selected
+					arffFile.add("@ATTRIBUTE " + aName + i + " numeric");
+				}
 			}
 		}
 		
@@ -152,6 +163,7 @@ public class ArffGenerator {
 		}
 		type = type.substring(0, type.length()-1);
 		type = type + "}";
+		
 		
 		arffFile.add("@ATTRIBUTE type " + type);
 		arffFile.add("");
@@ -174,12 +186,44 @@ public class ArffGenerator {
 			if(theBoxes.get(i).isSelected()){
 				//Get the name of the Attribute & remove all Whitespaces (for ease of equals method)
 				String name = theBoxes.get(i).getText();
-				name = name.replaceAll("\\s", "");
-		
-				if(name.equalsIgnoreCase("AverageBytes")){
-					result = result + AttributeUtils.getAvgByte(f) + ",";
+				name = name.replaceAll("\\s", "");				
+				
+				//Get the path of the file
+				Path path = Paths.get(f.getAbsolutePath());
+				
+				//Read in all the bytes of that file
+				byte[] bytes = null;
+				try {
+					bytes = Files.readAllBytes(path);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				Feature feature = null;
+				if(name.equalsIgnoreCase("TotalFeature")){
+					//Set the feature
+					feature = new TotalFeature();
+				}
+				else if (name.equalsIgnoreCase("PercentageFeature")){
+					//Set the feature
+					feature = new PercentageFeature();
+				}
+				else{
+					System.out.println("Error: No Features Selected!");
 				}
 				//ADD MORE ATTRIBUTES HERE!!!!
+				//Create the matrix using the feature
+				Matrix m = new Matrix(1, bytes, feature);
+				//Return the results of the feature
+				double[][] matrix = m.getMatrix();
+				
+				//Add the feature's result to the arff results
+				for(int k = 0; k < matrix.length; k++){
+					for(int j = 0; j < matrix[k].length; j++){
+						 result = result + matrix[k][j] + ",";
+						 //System.out.println(matrix[k][j]);
+					}
+				}
 			}
 		}
 		

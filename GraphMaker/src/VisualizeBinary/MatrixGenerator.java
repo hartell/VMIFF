@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import VisualizeBinary.Features.Feature;
-import VisualizeBinary.Features.PercentageFeature;
+import VisualizeBinary.Features.TotalFeature;
 import VisualizeBinary.Matrix.Matrix;
 
 
@@ -48,8 +48,8 @@ public class MatrixGenerator {
 			}
 		}	
 
-		//Feature feature = new SummationFeature();
-		Feature feature = new PercentageFeature();
+		Feature feature = new TotalFeature();
+		//Feature feature = new PercentageFeature();
 		Matrix m = new Matrix(2, bytes, feature);
 		double[][] matrix = m.getMatrix();
 		

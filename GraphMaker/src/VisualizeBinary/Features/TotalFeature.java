@@ -10,9 +10,9 @@ import VisualizeBinary.Matrix.Point;
  * @author hartell
  *
  */
-public class SummationFeature extends Feature {
+public class TotalFeature extends Feature {
 
-	public SummationFeature() {
+	public TotalFeature() {
 		super();
 	}
 

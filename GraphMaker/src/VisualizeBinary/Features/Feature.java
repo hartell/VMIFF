@@ -4,7 +4,7 @@
 package VisualizeBinary.Features;
 
 import java.util.ArrayList;
-import VisualizeBinary.Point;
+import VisualizeBinary.Matrix.Point;
 
 /**
  * @author hartell

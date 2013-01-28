@@ -6,6 +6,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import VisualizeBinary.Matrix.Matrix;
 
 /**
  * This class renders a 2D graph of the given bytes

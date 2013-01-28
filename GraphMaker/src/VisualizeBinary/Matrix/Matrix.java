@@ -1,7 +1,7 @@
 /**
  * 
  */
-package VisualizeBinary;
+package VisualizeBinary.Matrix;
 
 import java.util.ArrayList;
 import VisualizeBinary.Features.Feature;
@@ -45,7 +45,7 @@ public class Matrix {
 		}
 		
 		//Calculate the totals for the matrix
-		for(int i = 0; i < bytes.length - 1; i = i + 2){
+		for(int i = 0; i < bytes.length; i = i + 2){
 			//Get the X, Y
 			int x = unsignByte(bytes[i]);
 			int y = unsignByte(bytes[i+1]);

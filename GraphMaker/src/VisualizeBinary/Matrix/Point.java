@@ -1,7 +1,7 @@
 /**
  * 
  */
-package VisualizeBinary;
+package VisualizeBinary.Matrix;
 
 /**
  * @author hartell

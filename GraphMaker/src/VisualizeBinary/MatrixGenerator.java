@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import VisualizeBinary.Features.Feature;
 import VisualizeBinary.Features.PercentageFeature;
+import VisualizeBinary.Matrix.Matrix;
 
 
 /**
@@ -54,7 +55,7 @@ public class MatrixGenerator {
 		
 		for(int i = 0; i < matrix.length; i++){
 			for(int j = 0; j < matrix[i].length; j++){
-				 System.out.print(matrix[i][j] + ", ");
+				 System.out.print(matrix[i][j] + " ");
 			}
 			System.out.println();
 		}

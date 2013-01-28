@@ -10,28 +10,28 @@ package VisualizeBinary.Matrix;
 public class Point {
 	
 	//Private variables:
-	private int color; // Color = the age of the point as it is read in from the stream of bytes
+	private int age;
 	private int x;
 	private int y;
 	
 	/**
 	 * A point
-	 * @param color - the age of the point, based on the order it is read in from the stream of bytes
+	 * @param age - the age of the point, based on the order it is read in from the stream of bytes
 	 * @param x - the x location
 	 * @param y - the y location
 	 */
-	public Point(int color, int x, int y){
-		this.color = color;
+	public Point(int age, int x, int y){
+		this.age = age;
 		this.x = x;
 		this.y = y;
 	}
 	
 	/**
-	 * Returns the color of the point
+	 * Returns the age of the point, based on the order it is read in from the stream of bytes
 	 * @return
 	 */
-	public int getColor(){
-		return color;
+	public int getAge(){
+		return age;
 	}
 
 	/**

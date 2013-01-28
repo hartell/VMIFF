@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import VisualizeBinary.Features.AverageAgeFeature;
 import VisualizeBinary.Features.Feature;
 import VisualizeBinary.Features.PercentageFeature;
+import VisualizeBinary.Features.TotalAgeFeature;
 import VisualizeBinary.Features.TotalFeature;
 import VisualizeBinary.Matrix.Matrix;
 
@@ -28,6 +30,9 @@ public class ArffGenerator {
 	
 	private static ArrayList<File> fragDirs;
 	private static ArrayList<String> arffFile;
+	
+	private static int granularity = 1;
+	
 	
 	/**
 	 * MAIN
@@ -55,6 +60,8 @@ public class ArffGenerator {
 		ArrayList<JCheckBox> theBoxes = new ArrayList<JCheckBox>();
 	    theBoxes.add(new JCheckBox("Total Feature"));  
 	    theBoxes.add(new JCheckBox("Percentage Feature"));
+	    theBoxes.add(new JCheckBox("Total Age Feature"));
+	    theBoxes.add(new JCheckBox("Average Age Feature"));
 	    String message = "Which attributes/features would you like to calculate?";  
 	    Object[] params = new Object[theBoxes.size() + 1];
 	    params[0] = message;
@@ -64,7 +71,7 @@ public class ArffGenerator {
 	    JOptionPane.showOptionDialog(null, params, "Available attributes:", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"OK"}, "default");
 	    
 		//Create the @Attributes section of Arff file, with a specifed granularity (if needed)
-	    createAttributes(theBoxes, 1);
+	    createAttributes(theBoxes);
 
 		// Run the metrics on the file
 		// For each directory of fragments...
@@ -134,7 +141,7 @@ public class ArffGenerator {
 	 * Example: @ ATTRIBUTE avgBytes numeric
 	 * @param theBoxes
 	 */
-	public static void createAttributes(ArrayList<JCheckBox> theBoxes, int granularity){
+	public static void createAttributes(ArrayList<JCheckBox> theBoxes){
 		
 		//Add in a file about the fileName (key attribute) -- will be removed from within weka
 		arffFile.add("@ATTRIBUTE fName string");
@@ -184,7 +191,7 @@ public class ArffGenerator {
 		for(int i = 0; i < theBoxes.size(); i++){
 			//For all the attributes selected..
 			if(theBoxes.get(i).isSelected()){
-				//Get the name of the Attribute & remove all Whitespaces (for ease of equals method)
+				//Get the name of the Attribute & remove all Whitespace (for ease of equals method)
 				String name = theBoxes.get(i).getText();
 				name = name.replaceAll("\\s", "");				
 				
@@ -198,7 +205,8 @@ public class ArffGenerator {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+	
+				//Determine which features were selected
 				Feature feature = null;
 				if(name.equalsIgnoreCase("TotalFeature")){
 					//Set the feature
@@ -207,6 +215,14 @@ public class ArffGenerator {
 				else if (name.equalsIgnoreCase("PercentageFeature")){
 					//Set the feature
 					feature = new PercentageFeature();
+				}
+				else if (name.equalsIgnoreCase("TotalAgeFeature")){
+					//Set the feature
+					feature = new TotalAgeFeature();
+				}
+				else if (name.equalsIgnoreCase("AverageAgeFeature")){
+					//Set the feature
+					feature = new AverageAgeFeature();
 				}
 				else{
 					System.out.println("Error: No Features Selected!");

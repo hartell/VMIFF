@@ -30,7 +30,7 @@ public class DataCruncher {
 	private static ArrayList<File> fragDirs;
 	private static ArrayList<String> arffFile;
 	private static ArrayList<Instance> instances;
-	private static int granularity = 1;
+	private static int granularity = 2;
 
 	/**
 	 * @param args
@@ -82,7 +82,7 @@ public class DataCruncher {
 				// Grab each file
 				File f = files[j];
 				// Get the metrics: from the file f, with the all the attrib in theBoxes, from directory i
-				String result = ArffGenerator.calcAttributes(f, theBoxes);
+				String result = ArffGenerator.calcAttributes(f, theBoxes, granularity);
 				int dirNum = i+1;
 				arffFile.add(f.getName() + "," + result + dirNum);
 				//Create the instance from the result;

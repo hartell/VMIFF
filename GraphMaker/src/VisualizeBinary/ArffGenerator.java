@@ -119,7 +119,7 @@ public class ArffGenerator {
 	 * Calculates each of the Attributes selected
 	 * @param theBoxes - a list of JCheckBoxes containing the possible attributes.
 	 */
-	public static String calcAttributes(File f, ArrayList<JCheckBox> theBoxes){
+	public static String calcAttributes(File f, ArrayList<JCheckBox> theBoxes, int granularity){
 		//Get the name of the file (key)
 		String result = new String();
 		
@@ -166,7 +166,7 @@ public class ArffGenerator {
 				}
 				//ADD MORE ATTRIBUTES HERE!!!!
 				//Create the matrix using the feature
-				Matrix m = new Matrix(1, bytes, feature);
+				Matrix m = new Matrix(granularity, bytes, feature);
 				//Return the results of the feature
 				double[][] matrix = m.getMatrix();
 				

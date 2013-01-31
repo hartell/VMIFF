@@ -30,7 +30,7 @@ public class DataCruncher {
 	private static ArrayList<File> fragDirs;
 	private static ArrayList<String> arffFile;
 	private static ArrayList<Instance> instances;
-	private static int granularity = 2;
+	private static int granularity = 1;
 
 	/**
 	 * @param args
@@ -56,7 +56,7 @@ public class DataCruncher {
 
 		//Ask the user what metrics they want to run on the files	
 		ArrayList<JCheckBox> theBoxes = new ArrayList<JCheckBox>();
-		theBoxes.add(new JCheckBox("Total Grains Feature"));  
+		theBoxes.add(new JCheckBox("Total Points Feature"));  
 		//theBoxes.add(new JCheckBox("Percentage Feature")); // same as total Feature
 		theBoxes.add(new JCheckBox("Total Age Feature"));
 		theBoxes.add(new JCheckBox("Average Age Feature"));

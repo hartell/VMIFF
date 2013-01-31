@@ -144,7 +144,7 @@ public class ArffGenerator {
 	
 				//Determine which features were selected
 				Feature feature = null;
-				if(name.equalsIgnoreCase("TotalGrainsFeature")){
+				if(name.equalsIgnoreCase("TotalPointsFeature")){
 					//Set the feature
 					feature = new TotalFeature();
 				}

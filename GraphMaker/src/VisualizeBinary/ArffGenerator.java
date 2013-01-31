@@ -28,81 +28,15 @@ import VisualizeBinary.Matrix.Matrix;
  */
 public class ArffGenerator {
 	
-	private static ArrayList<File> fragDirs;
-	private static ArrayList<String> arffFile;
-	
-	private static int granularity = 1;
-	
-	
-	/**
-	 * MAIN
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		System.out.println("Please select a dataset to load...");
-		
-		//Declare Globals
-		fragDirs = new ArrayList<File>();
-		arffFile = new ArrayList<String>();
-		
-		//Ask the user to build their dataSets by adding fragmented Files
-		boolean done = false;
-		while(!done){
-			done = selectDataSets();
-		}
-		
-		//Ask users what they want this relation called (@relation)
-		String rName = JOptionPane.showInputDialog("Name of Relation?");
-		arffFile.add("@RELATION " + rName);
-		arffFile.add(" ");
-
-		//Ask the user what metrics they want to run on the files	
-		ArrayList<JCheckBox> theBoxes = new ArrayList<JCheckBox>();
-	    theBoxes.add(new JCheckBox("Total Feature"));  
-	    theBoxes.add(new JCheckBox("Percentage Feature"));
-	    theBoxes.add(new JCheckBox("Total Age Feature"));
-	    theBoxes.add(new JCheckBox("Average Age Feature"));
-	    String message = "Which attributes/features would you like to calculate?";  
-	    Object[] params = new Object[theBoxes.size() + 1];
-	    params[0] = message;
-	    for(int i = 0; i < theBoxes.size(); i++){
-	    	params[i+1] = theBoxes.get(i);
-	    }
-	    JOptionPane.showOptionDialog(null, params, "Available attributes:", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"OK"}, "default");
-	    
-		//Create the @Attributes section of Arff file, with a specifed granularity (if needed)
-	    createAttributes(theBoxes);
-
-		// Run the metrics on the file
-		// For each directory of fragments...
-		for (int i = 0; i < fragDirs.size(); i++) {
-			// Get all files
-			File[] files = fragDirs.get(i).listFiles();
-
-			// Go through all the files
-			for (int j = 0; j < files.length; j++) {
-				// Grab each file
-				File f = files[j];
-				// Get the metrics: from the file f, with the all the attrib in theBoxes, from directory i
-				String result = calcAttributes(f, theBoxes, (i+1));
-				arffFile.add(result);
-			}
-		}
-		
-		
-		//Write out the newly created Arff file
-		makeArffFile(rName);
-		
-	}
-	
 	/**
 	 * Allows the user to select the data sets for the arff file
+	 * 
 	 * @return boolean - if the user is finished selecting sets
 	 */
-	public static boolean selectDataSets(){
+	public static boolean selectDataSets(ArrayList<File> fragDirs){
 		boolean done = false;
 		
-		//Create a JFileChooser to allow the user to navigate to the selectable dataset directory
+		//Create a JFileChooser to allow the user to navigate to the select data set directory
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle("Select a dataset");
 		chooser.setCurrentDirectory(new File("H://SVM/"));
@@ -140,8 +74,9 @@ public class ArffGenerator {
 	 * Creates all the attributes for the arff file
 	 * Example: @ ATTRIBUTE avgBytes numeric
 	 * @param theBoxes
+	 * @return 
 	 */
-	public static void createAttributes(ArrayList<JCheckBox> theBoxes){
+	public static ArrayList<String> createAttributes(ArrayList<String> arffFile,  ArrayList<File> fragDirs, ArrayList<JCheckBox> theBoxes, int granularity){
 		
 		//Add in a file about the fileName (key attribute) -- will be removed from within weka
 		arffFile.add("@ATTRIBUTE fName string");
@@ -177,15 +112,17 @@ public class ArffGenerator {
 		
 		//Create the @data Section
 		arffFile.add("@DATA");
+		
+		return arffFile;
 	}
 	
 	/**
 	 * Calculates each of the Attributes selected
 	 * @param theBoxes - a list of JCheckBoxes containing the possible attributes.
 	 */
-	public static String calcAttributes(File f, ArrayList<JCheckBox> theBoxes, int dirNum){
+	public static String calcAttributes(File f, ArrayList<JCheckBox> theBoxes){
 		//Get the name of the file (key)
-		String result = f.getName() + ",";
+		String result = new String();
 		
 		//Determine which attributes we need to use
 		for(int i = 0; i < theBoxes.size(); i++){
@@ -243,9 +180,6 @@ public class ArffGenerator {
 			}
 		}
 		
-		//Add the type of file this is:
-		result = result + dirNum;
-		
 		return result;	
 	}
 	
@@ -253,9 +187,10 @@ public class ArffGenerator {
 	 * Generates and saves the Arff File to a predetermined location
 	 * @param name - the name of the arff File
 	 */
-	public static void makeArffFile(String name){
+	public static void makeArffFile(String name, ArrayList<String> arffFile){
 		try{
 			//Create a Writer, write each line out to a file.
+			System.out.println("Writing Arrf File to disk");
 			FileWriter fStream = new FileWriter("H://SVM/ARFF/" + name + ".arff");
 			BufferedWriter out = new BufferedWriter(fStream);
 			for(String s : arffFile){

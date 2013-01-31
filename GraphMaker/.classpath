@@ -14,5 +14,11 @@
 	<classpathentry kind="lib" path="libs/jogl-all-natives-windows-amd64.jar"/>
 	<classpathentry kind="lib" path="libs/jogl-all.jar"/>
 	<classpathentry kind="lib" path="libs/org.jzy3d-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/ajt-2.9.jar"/>
+	<classpathentry kind="lib" path="libs/commons-math-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/javaml-0.1.7.jar"/>
+	<classpathentry kind="lib" path="libs/libsvm.jar"/>
+	<classpathentry kind="lib" path="libs/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

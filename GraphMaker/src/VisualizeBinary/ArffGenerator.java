@@ -16,7 +16,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import VisualizeBinary.Features.AverageAgeFeature;
 import VisualizeBinary.Features.Feature;
-import VisualizeBinary.Features.PercentageFeature;
 import VisualizeBinary.Features.TotalAgeFeature;
 import VisualizeBinary.Features.TotalFeature;
 import VisualizeBinary.Matrix.Matrix;
@@ -145,14 +144,15 @@ public class ArffGenerator {
 	
 				//Determine which features were selected
 				Feature feature = null;
-				if(name.equalsIgnoreCase("TotalFeature")){
+				if(name.equalsIgnoreCase("TotalGrainsFeature")){
 					//Set the feature
 					feature = new TotalFeature();
 				}
-				else if (name.equalsIgnoreCase("PercentageFeature")){
-					//Set the feature
-					feature = new PercentageFeature();
-				}
+				//Same as totalFeature but in %
+//				else if (name.equalsIgnoreCase("PercentageFeature")){
+//					//Set the feature
+//					feature = new PercentageFeature();
+//				}
 				else if (name.equalsIgnoreCase("TotalAgeFeature")){
 					//Set the feature
 					feature = new TotalAgeFeature();

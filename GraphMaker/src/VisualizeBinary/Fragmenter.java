@@ -14,15 +14,18 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
- * This class will take a single file, multiple files or an entire directory and fragment it into 512 byte fragments.
+ * This class will take a single file, multiple files or an entire directory and fragment it into fragmentSize byte fragments.
  * @author hartell
  */
 public class Fragmenter {
-
+	
+	public static int fragmentSize = 0;
+	public static int numOfFrags = 0;
+	public static int fragCounter = 1;
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
 		// Ask the user if they want to fragment specific file/s or an entire directory..
 		Object[] options = {"Directory", "File"};
 		int answer = JOptionPane.showOptionDialog(null, "Fragment Directory or File/s?", "Information", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
@@ -84,9 +87,8 @@ public class Fragmenter {
 				}
 			}
 			
-			//Create a Directory to put the file fragments, start naming at fragment1
+			//Create a Directory to put the file fragments, naming fragment starts at 1
 			File output = new File(files[0].getParentFile() + "\\Fragmented");
-			int fragCounter = 1;
 			
 			//Check to see if the directory exists...
 			//If not, make it.
@@ -100,7 +102,7 @@ public class Fragmenter {
 				
 				//Delete files in Directory
 				if(emptyFolder == JOptionPane.YES_OPTION){
-					System.out.println("Deleting Old Fragments...");
+					System.out.println("Deleting Old Fragments... (please be patient)");
 					//Empty the folder
 					File[] fileList = output.listFiles();
 					for(File myFile : fileList){
@@ -141,7 +143,40 @@ public class Fragmenter {
 			else {
 				//Something went wrong
 				throw new IllegalArgumentException("Output directory is not a directory!");
-			}			
+			}	
+			
+			//Ask the user what size fragments to output:
+			while(fragmentSize <= 0){
+				String size = JOptionPane.showInputDialog("Size of fragments: ", "512");
+				if(size.equals(JOptionPane.CLOSED_OPTION) || size.equals(JOptionPane.CANCEL_OPTION)){
+					System.out.println("User Quit");
+					System.exit(0);
+				}
+				//Test if the size input is actually an int.
+				try{
+					int test = Integer.parseInt(size);
+					fragmentSize = test;
+				} catch (NumberFormatException e){
+					System.err.println("Not a number, please retry");
+				}
+			}
+			
+			//Ask the user how many fragments they want...
+			while(numOfFrags <= 0){
+				String size = JOptionPane.showInputDialog("How many fragments: ", "20000");
+				if(size.equals(JOptionPane.CLOSED_OPTION) || size.equals(JOptionPane.CANCEL_OPTION)){
+					System.out.println("User Quit");
+					System.exit(0);
+				}
+				//Test if the size input is actually an int.
+				try{
+					int test = Integer.parseInt(size);
+					numOfFrags = test;
+				} catch (NumberFormatException e){
+					System.err.println("Error: not a number, please retry");
+				}
+			}
+			
 			
 			//Ask the user how to fragment file
 			String[] fragMethod = {"Whole File", "Header Fragments", "Mid Fragments", "Footer Fragments"};
@@ -155,28 +190,33 @@ public class Fragmenter {
 				//Iterate through the files the user wants to fragment, name them fragment + (fragCounter - aka wherever the last filename left off);
 				int i = 1;
 				for(File f : files){
-					System.out.println("Fragmenting file #" + i);
-					System.out.println("Input: " + f.getAbsolutePath());
-					System.out.println("Output: " + f.getParentFile() + "\\Fragmented");
-					int temp = 0;
-					//Determine how the user selected to fragment the file.
-					if(howToFrag.equals("Whole File")) {
-						System.out.println("User selected to fragment whole file");
-						temp = fragmentFiles(f, output, fragCounter);
-					} else if(howToFrag.equals("Header Fragments")) {
-						System.out.println("User selected to fragment header fragments from the file");
-						temp = fragmentHeaders(f, output, fragCounter);
-					} else if(howToFrag.equals("Mid Fragments")) {
-						System.out.println("User selected to fragment middle fragments from the file");
-						temp = fragmentMids(f, output, fragCounter);
-					} else if (howToFrag.equals("Footer Fragments")) {
-						System.out.println("User selected to fragment footers fragments from the file");
-						temp = fragmentFooters(f, output, fragCounter);
+					//Check to see if we've reach the number of fragments the user wants:
+					if(fragCounter < numOfFrags+1){
+						System.out.println("Fragmenting file #" + i);
+						System.out.println("Input: " + f.getAbsolutePath());
+						System.out.println("Output: " + f.getParentFile() + "\\Fragmented");
+						int temp = 0;
+						//Determine how the user selected to fragment the file.
+						if(howToFrag.equals("Whole File")) {
+							System.out.println("User selected to fragment whole file");
+							temp = fragmentFiles(f, output, fragCounter);
+						} else if(howToFrag.equals("Header Fragments")) {
+							System.out.println("User selected to fragment header fragments from the file");
+							temp = fragmentHeaders(f, output, fragCounter);
+						} else if(howToFrag.equals("Mid Fragments")) {
+							System.out.println("User selected to fragment middle fragments from the file");
+							temp = fragmentMids(f, output, fragCounter);
+						} else if (howToFrag.equals("Footer Fragments")) {
+							System.out.println("User selected to fragment footers fragments from the file");
+							temp = fragmentFooters(f, output, fragCounter);
+						} else {
+							System.err.println("Error: User didn't specify how to fragment file");
+						}
+						fragCounter = temp;
+						i++;
 					} else {
-						System.err.println("Error: User didn't specify how to fragment file");
+						//Do nothing, we've reach the number of fragments we needed!
 					}
-					fragCounter = temp;
-					i++;
 				}
 			}
 		}
@@ -185,35 +225,42 @@ public class Fragmenter {
 			System.out.println("User Quit");
 			System.exit(0);
 		}
+		
+		//Notify User if the number of fragments was less than the number s/he wanted.
+		if(fragCounter < numOfFrags) {
+			System.out.println("Notice: Not enough files to reach goal number of fragments...");
+		}
+		
+		//Fragmenting is completed!
 		System.out.println("Fragmentation Complete");
 	}
 	
 	/**
-	 * This method fragments a file into 512 bytes sections, but only outputs the first 512 bytes (header).
+	 * This method fragments a file into fragmentSize bytes sections, but only outputs the first fragmentSize bytes (header).
 	 * @param input - the file to be fragmented
 	 * @param output - the output location
 	 * @param fragCounter - the last numerical fragment number
 	 * @return int - value of the last file created.
 	 */
 	public static int fragmentHeaders(File input, File output, int fragCounter){
-		//Only use the 512 bytes :)	
+		//Only use the fragmentSize bytes :)	
 		int fileCounter = fragCounter;
 		try {
 			//Create a randomAccessFile to fragment from
 			RandomAccessFile file = new RandomAccessFile(input, "r");
-			//Check to see if the file is > 512 bytes
-			if(file.getFilePointer() + 512 < file.length()){
-				//Read in the 512 bytes and output them.
-				//Read in 512 bytes
-				byte[] buffer = new byte[512];
+			//Check to see if the file is > fragmentSize bytes
+			if(file.getFilePointer() + fragmentSize < file.length()){
+				//Read in the fragmentSize bytes and output them.
+				//Read in fragmentSize bytes
+				byte[] buffer = new byte[fragmentSize];
 				file.readFully(buffer);
-				//Output the 512 byte fragment to a incremented file named Fragment + fileCount
+				//Output the fragmentSize byte fragment to a incremented file named Fragment + fileCount
 				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
 				fileCounter++;
 				out.write(buffer);
 				out.close();
 			}
-			//Otherwise the file will be less than 512 bytes... so we're going to skip it?
+			//Otherwise the file will be less than fragmentSize bytes... so we're going to skip it?
 			else {
 				//Do nothing? Panic? Throw chickens?
 			}
@@ -226,33 +273,39 @@ public class Fragmenter {
 	}
 	
 	/**
-	 * This method fragments a file into 512 bytes sections, but removes the first 512 bytes (header) and the last 512 bytes (footer)
+	 * This method fragments a file into fragmentSize bytes sections, but removes the first fragmentSize bytes (header) and the last fragmentSize bytes (footer)
 	 * @param input - the file to be fragmented
 	 * @param output - the output location
 	 * @param fragCounter - the last numerical fragment number
 	 * @return int - value of the last file created.
 	 */
 	public static int fragmentMids(File input, File output, int fragCounter){
-		//Skip the first 512 bytes (header), the output fragments, skip the last on (footer)
+		//Skip the first fragmentSize bytes (header), the output fragments, skip the last on (footer)
 		int fileCounter = fragCounter;
 		try {
 			//Create a randomAccessFile to fragment from
 			RandomAccessFile file = new RandomAccessFile(input, "r");
-			//Check to see if the file is greater than 1024 (512 for header, 512 for mid, +whatever for footer)
-			//if > 1024
-			if(file.getFilePointer() + 1024 < file.length()){
-				//skip 512 bytes (header)
-				file.seek(512);
-				//while Pointer+512 < file length... output fragment
-				while(file.getFilePointer()+512 < file.length()){
-					//Read in 512 bytes
-					byte[] buffer = new byte[512];
-					file.readFully(buffer);
-					//Output the 512 byte fragment to a incremented file named Fragment + fileCount
-					OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
-					fileCounter++;
-					out.write(buffer);
-					out.close();
+			//Check to see if the file is greater than (fragmentSize*2) (fragmentSize for header, fragmentSize for mid, +whatever for footer)
+			//if > (fragmentSize*2)
+			if(file.getFilePointer() + (fragmentSize*2) < file.length()){
+				//skip fragmentSize bytes (header)
+				file.skipBytes(fragmentSize);
+				//while Pointer+fragmentSize < file length... output fragment
+				while(file.getFilePointer()+fragmentSize < file.length()){
+					//Check to make sure we still need fragments!
+					//If the fileCounter < numOfFrags, we need more, so chop them up.
+					if(fileCounter < numOfFrags+1){
+						//Read in fragmentSize bytes
+						byte[] buffer = new byte[fragmentSize];
+						file.readFully(buffer);
+						//Output the fragmentSize byte fragment to a incremented file named Fragment + fileCount
+						OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
+						fileCounter++;
+						out.write(buffer);
+						out.close();
+					} else {
+						file.skipBytes(fragmentSize);
+					}
 				}
 			}
 			else{
@@ -267,36 +320,34 @@ public class Fragmenter {
 	}
 	
 	/**
-	 * This method fragments a file into 512 bytes sections, but only outputs the last 512 bytes (footer)
+	 * This method fragments a file into fragmentSize bytes sections, but only outputs the last fragmentSize bytes (footer)
 	 * @param input - the file to be fragmented
 	 * @param output - the output location
 	 * @param fragCounter - the last numerical fragment number
 	 * @return int - value of the last file created.
 	 */
 	public static int fragmentFooters(File input, File output, int fragCounter){
-		//Skip the first 512 bytes (header),skipp the output fragments, output the last on (footer)
+		//Skip the first fragmentSize bytes (header),skip the output fragments, output the last on (footer)
 		int fileCounter = fragCounter;
 		try {
 			//Create a randomAccessFile to fragment from
 			RandomAccessFile file = new RandomAccessFile(input, "r");
-			//Check to see if the file is greater than 1024 (512 for header, 512 for mid, + whatever footer)
-			if(file.getFilePointer() + 1024 < file.length()){
-				//Seek 512 bytes (header)
-				file.skipBytes(512);
-				// while file.getFilePointer + 512 < file.length)
-				while(file.getFilePointer() + 512 < file.length()){
-					System.out.println(file.getFilePointer());
-					file.skipBytes(512);
-					System.out.println(file.getFilePointer());
+			//Check to see if the file is greater than (fragmentSize*2) (fragmentSize for header, fragmentSize for mid, + whatever footer)
+			if(file.getFilePointer() + (fragmentSize*2) < file.length()){
+				//Seek fragmentSize bytes (header)
+				file.skipBytes(fragmentSize);
+				// while file.getFilePointer + fragmentSize < file.length)
+				while(file.getFilePointer() + fragmentSize < file.length()){
+					file.skipBytes(fragmentSize);
 				}
-				//IF the file has any leftover bytes < 512 left...
+				//IF the file has any leftover bytes < fragmentSize left...
 				//output the leftover bytes (footer)
 				if(file.getFilePointer() != file.length()){
-					//Read in whatever is left and pad with 0s up to 512 bytes.
-					byte[] buffer = new byte[512];
+					//Read in whatever is left and pad with 0s up to fragmentSize bytes.
+					byte[] buffer = new byte[fragmentSize];
 					int end = (int) (file.length() - file.getFilePointer());
 					file.readFully(buffer, 0 , end);
-					//Output the 512 byte fragment to a incremented file named Fragment + fileCount
+					//Output the fragmentSize byte fragment to a incremented file named Fragment + fileCount
 					OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
 					fileCounter++;
 					out.write(buffer);
@@ -316,7 +367,7 @@ public class Fragmenter {
 	}
 	
 	/**
-	 * This method fragments a file into 512 bytes sections. Remnants of files < 512 bytes are padded with zeros
+	 * This method fragments a file into fragmentSize bytes sections. Remnants of files < fragmentSize bytes are padded with zeros
 	 * @param input - the file to be fragmented
 	 * @param output - the output location
 	 * @param fragCounter - the last numerical fragment number
@@ -328,24 +379,29 @@ public class Fragmenter {
 		try {
 			//Create a randomAccessFile to fragment from
 			RandomAccessFile file = new RandomAccessFile(input, "r");
-			//While the file has more than 512 bytes left...
-			while(file.getFilePointer() + 512 < file.length()){
-				//Read in 512 bytes
-				byte[] buffer = new byte[512];
-				file.readFully(buffer);
-				//Output the 512 byte fragment to a incremented file named Fragment + fileCount
-				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
-				fileCounter++;
-				out.write(buffer);
-				out.close();
+			//While the file has more than fragmentSize bytes left...
+			while(file.getFilePointer() + fragmentSize < file.length()){
+				//If the fileCounter < numOfFrags, we need more, so chop them up.
+				if(fileCounter < numOfFrags+1) {
+					//Read in fragmentSize bytes
+					byte[] buffer = new byte[fragmentSize];
+					file.readFully(buffer);
+					//Output the fragmentSize byte fragment to a incremented file named Fragment + fileCount
+					OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
+					fileCounter++;
+					out.write(buffer);
+					out.close();
+				} else {
+					file.skipBytes(fragmentSize);
+				}
 			}
-			//IF the file has any leftover bytes < 512 left...
-			if(file.getFilePointer() != file.length()){
-				//Read in whatever is left and pad with 0s up to 512 bytes.
-				byte[] buffer = new byte[512];
+			//IF the file has any leftover bytes < fragmentSize left...
+			if(file.getFilePointer() != file.length() && fileCounter < numOfFrags+1){
+				//Read in whatever is left and pad with 0s up to fragmentSize bytes.
+				byte[] buffer = new byte[fragmentSize];
 				int end = (int) (file.length() - file.getFilePointer());
 				file.readFully(buffer, 0 , end);
-				//Output the 512 byte fragment to a incremented file named Fragment + fileCount
+				//Output the fragmentSize byte fragment to a incremented file named Fragment + fileCount
 				OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
 				fileCounter++;
 				out.write(buffer);

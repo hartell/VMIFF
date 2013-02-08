@@ -180,7 +180,7 @@ public class Fragmenter {
 			
 			//Ask the user how to fragment file
 			String[] fragMethod = {"Whole File", "Header Fragments", "Mid Fragments", "Footer Fragments"};
-			String howToFrag = (String) JOptionPane.showInputDialog(null, "Select fragment method: ", "How would you like to fragment the file(s)", JOptionPane.QUESTION_MESSAGE, null, fragMethod, fragMethod[0]);
+			String howToFrag = (String) JOptionPane.showInputDialog(null, "Select fragment method: ", "How would you like to fragment the file(s)", JOptionPane.QUESTION_MESSAGE, null, fragMethod, fragMethod[2]);
 			
 			if(howToFrag.equals(JOptionPane.CLOSED_OPTION) || howToFrag.equals(JOptionPane.CANCEL_OPTION)){
 				System.out.println("User closed the Select Fragment method. Program exiting.");

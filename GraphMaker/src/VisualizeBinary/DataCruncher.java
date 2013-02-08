@@ -3,7 +3,9 @@
  */
 package VisualizeBinary;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.JCheckBox;
@@ -31,6 +33,7 @@ public class DataCruncher {
 	private static ArrayList<String> arffFile;
 	private static ArrayList<Instance> instances;
 	private static int granularity = 1;
+	private static String rName = "";
 
 	/**
 	 * @param args
@@ -50,7 +53,7 @@ public class DataCruncher {
 		}
 
 		//Ask users what they want this relation called (@relation)
-		String rName = JOptionPane.showInputDialog("Name of Relation?");
+		rName = JOptionPane.showInputDialog("Name of Relation?");
 		arffFile.add("@RELATION " + rName);
 		arffFile.add(" ");
 
@@ -164,12 +167,9 @@ public class DataCruncher {
 		//Build Classifier
 		System.out.println("Building Classifier...");
 		Classifier randForest = new RandomForest(10);
-		//Classifier naiveBayes = new NaiveBayesClassifier(true,true,false);
-		//naiveBayes.buildClassifier(data);
 
 		//Build the 10-fold default CrossValidation
 		System.out.println("Performing Cross Validation...");
-		//CrossValidation cv = new CrossValidation(naiveBayes);
 		CrossValidation cv = new CrossValidation(randForest);
 
 		//Get Results of cross validation
@@ -185,25 +185,58 @@ public class DataCruncher {
 	 * @param map - the results of the states
 	 */
 	private static void outputResults(Map<Object, PerformanceMeasure> map) {
-		for(int i = 1; i < 3; i++){
-			System.out.println("MAP " + i + ": ------------------");
-			System.out.println("TP Rate: "+ map.get(i).getTPRate());
-			System.out.println("FP Rate: "+ map.get(i).getFPRate());
-			System.out.println("TN Rate: "+ map.get(i).getTNRate());
-			System.out.println("FN Rate: "+ map.get(i).getFNRate());
-			System.out.println("Accuracy: " + map.get(i).getAccuracy());
-			System.out.println("BCR: "+ map.get(i).getBCR());
-			System.out.println("Correlation: "+ map.get(i).getCorrelation());
-			System.out.println("Coefficient: "+ map.get(i).getCorrelationCoefficient());
-			System.out.println("Cost: "+ map.get(i).getCost());
-			System.out.println("Error Rate: "+ map.get(i).getErrorRate());
-			System.out.println("FMeasure: "+ map.get(i).getFMeasure());
-			System.out.println("Precision: "+ map.get(i).getPrecision());
-			System.out.println("Q9: "+ map.get(i).getQ9());
-			System.out.println("Recall: "+ map.get(i).getRecall());
-			System.out.println("Total: "+ map.get(i).getTotal());
-			//Line Break
-			System.out.println();
+		try{
+			//Create a Writer, write each line out to a file.
+			System.out.println("Outputting Results");
+			FileWriter fStream = new FileWriter("H://SVM/Reports/" + rName + "Report.csv");
+			BufferedWriter out = new BufferedWriter(fStream);
+			//Write out the name of the relation
+			out.write(arffFile.get(0));
+			out.newLine();
+			
+			//Calculate all the things...
+			for(int i = 1; i < 3; i++){
+				System.out.println("MAP " + i + ": ------------------");
+				double tPRate = map.get(i).getTPRate();
+				double fPRate = map.get(i).getFPRate();
+				double tNRate = map.get(i).getTNRate();
+				double fNRate = map.get(i).getFNRate();
+				double accuracy = map.get(i).getAccuracy();
+				double bcr = map.get(i).getBCR();
+				double correlation = map.get(i).getCorrelation();
+				double corrCoefficient = map.get(i).getCorrelationCoefficient();
+				double cost = map.get(i).getCost();
+				double errorRate = map.get(i).getErrorRate();
+				double fMeasure = map.get(i).getFMeasure();
+				double precision = map.get(i).getPrecision();
+				double q9 = map.get(i).getQ9();
+				double recall = map.get(i).getRecall();
+				double total = map.get(i).getTotal();
+				out.write("TP Rate: "+ tPRate + ",");
+				out.write("FP Rate: "+ fPRate + ",");
+				out.write("TN Rate: "+ tNRate + ",");
+				out.write("FN Rate: "+ fNRate  + ",");
+				out.write("Accuracy: " + accuracy + ",");
+				out.write("BCR: "+ bcr + ",");
+				out.write("Correlation: "+ correlation + ",");
+				out.write("Coefficient: "+ corrCoefficient + ",");
+				out.write("Cost: "+ cost + ",");
+				out.write("Error Rate: "+ errorRate + ",");
+				out.write("FMeasure: "+ fMeasure + ",");
+				out.write("Precision: "+ precision + ",");
+				out.write("Q9: "+ q9 + ",");
+				out.write("Recall: "+ recall + ",");
+				out.write("Total: "+ total  + ",");
+				//Line Break
+				out.newLine();
+			}
+			
+			//Close the important bits
+			out.close();
+			fStream.close();
+		}
+		catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 

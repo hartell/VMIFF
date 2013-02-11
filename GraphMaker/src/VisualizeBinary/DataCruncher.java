@@ -6,6 +6,7 @@ package VisualizeBinary;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.JCheckBox;
@@ -59,9 +60,9 @@ public class DataCruncher {
 
 		//Ask the user what metrics they want to run on the files	
 		ArrayList<JCheckBox> theBoxes = new ArrayList<JCheckBox>();
-		theBoxes.add(new JCheckBox("Total Points Feature"));  
+		theBoxes.add(new JCheckBox("Total Points Feature", true));  
 		//theBoxes.add(new JCheckBox("Percentage Feature")); // same as total Feature
-		theBoxes.add(new JCheckBox("Total Age Feature"));
+		theBoxes.add(new JCheckBox("Total Age Feature",true));
 		theBoxes.add(new JCheckBox("Average Age Feature"));
 		String message = "Which attributes/features would you like to calculate?";  
 		Object[] params = new Object[theBoxes.size() + 1];
@@ -185,6 +186,9 @@ public class DataCruncher {
 	 * @param map - the results of the states
 	 */
 	private static void outputResults(Map<Object, PerformanceMeasure> map) {
+		
+		ArrayList<Double> tpRates = new ArrayList<Double>();
+		
 		try{
 			//Create a Writer, write each line out to a file.
 			System.out.println("Outputting Results");
@@ -198,6 +202,7 @@ public class DataCruncher {
 			for(int i = 1; i < 3; i++){
 				System.out.println("MAP " + i + ": ------------------");
 				double tPRate = map.get(i).getTPRate();
+				tpRates.add(tPRate);
 				double fPRate = map.get(i).getFPRate();
 				double tNRate = map.get(i).getTNRate();
 				double fNRate = map.get(i).getFNRate();
@@ -212,6 +217,9 @@ public class DataCruncher {
 				double q9 = map.get(i).getQ9();
 				double recall = map.get(i).getRecall();
 				double total = map.get(i).getTotal();
+				
+//				Output all the things:
+				out.write("File type " + i + ": ");
 				out.write("TP Rate: "+ tPRate + ",");
 				out.write("FP Rate: "+ fPRate + ",");
 				out.write("TN Rate: "+ tNRate + ",");
@@ -230,6 +238,28 @@ public class DataCruncher {
 				//Line Break
 				out.newLine();
 			}
+			
+			//Calculate the number of correct/incorrect classifications
+			double avgTP = 0.0;
+			for(Double d : tpRates){
+				avgTP = avgTP + d;
+			}
+			avgTP = avgTP / tpRates.size();
+			
+			double total = map.get(1).getTotal();
+			
+			double correctClassifications = total * avgTP;
+			double incorrectClassifications = total - correctClassifications;
+			
+			DecimalFormat df = new DecimalFormat("00.00%");
+			
+			out.newLine();
+			out.write("Correct Classifications: " + correctClassifications + ", ");
+			out.write("Percentage: " + (df.format(correctClassifications/total)));
+			out.newLine();
+			out.write("Incorrect Classifications: " + incorrectClassifications + ", ");
+			out.write("Percentage: " + (df.format(incorrectClassifications/total)));
+			
 			
 			//Close the important bits
 			out.close();

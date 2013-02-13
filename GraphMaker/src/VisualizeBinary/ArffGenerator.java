@@ -26,13 +26,104 @@ import VisualizeBinary.Matrix.Matrix;
  *
  */
 public class ArffGenerator {
+		
+	/**
+	 * Creates the attributes for the file based on the features selected
+	 * @param arffFile
+	 * @param numOfGroups
+	 * @param features
+	 * @param granularity
+	 * @return
+	 */
+	public static ArrayList<String> createAttribute(ArrayList<String> arffFile,  int numOfGroups, String[] features, int granularity){
+		//Add in a file about the fileName (key attribute) -- can be removed from within weka
+		arffFile.add("@ATTRIBUTE fName string");
+		
+		String aName = "";
+		int totalNumAttributes = (int) Math.pow(4, granularity);
+		
+		//For each of the features, calculate the attributes
+		for(int i = 0; i < features.length; i++){
+			aName = features[i];
+			for(int j = 0; j < totalNumAttributes; j++){
+				//Add an attribute for each granularity selected
+				arffFile.add("@ATTRIBUTE " + aName + j + " numeric");
+			}
+		}
+		
+		//Add the number of types (current based off of the number of Directories added.
+		String type = "{";
+		for(int i = 0; i < numOfGroups; i++){
+			type = type + (i+1) +",";
+		}
+		type = type.substring(0, type.length()-1);
+		type = type + "}";
+		
+		
+		arffFile.add("@ATTRIBUTE type " + type);
+		arffFile.add("");
+		
+		//Create the @data Section
+		arffFile.add("@DATA");
+		
+		return arffFile;
+	}
+	
+	public static String calcAttributes(File f, String[] features, int granularity) {
+		String result = new String();
+		
+		//Get the path of the file
+		Path path = Paths.get(f.getAbsolutePath());
+		//Read in all the bytes of that file
+		byte[] bytes = null;
+		try {
+			bytes = Files.readAllBytes(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//Go through the features and determine which ones to calculate
+		Feature feature = null;
+		for(String name : features){
+			if(name.equalsIgnoreCase("TotalPointsFeature")){
+				//Set the feature
+				feature = new TotalFeature();
+			}
+			else if (name.equalsIgnoreCase("TotalAgeFeature")){
+				//Set the feature
+				feature = new TotalAgeFeature();
+			}
+			else if (name.equalsIgnoreCase("AverageAgeFeature")){
+				//Set the feature
+				feature = new AverageAgeFeature();
+			}
+			else{
+				System.out.println("Error: Feature not recognized!");
+			}
+			
+			//Create the matrix using the feature
+			Matrix m = new Matrix(granularity, bytes, feature);
+			//Return the results of the feature
+			double[][] matrix = m.getMatrix();
+			
+			//Add the feature's result to the arff results
+			for(int k = 0; k < matrix.length; k++){
+				for(int j = 0; j < matrix[k].length; j++){
+					 result = result + matrix[k][j] + ",";
+					 //System.out.println(matrix[k][j]);
+				}
+			}
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * Allows the user to select the data sets for the arff file
 	 * 
 	 * @return boolean - if the user is finished selecting sets
 	 */
-	public static boolean selectDataSets(ArrayList<File> fragDirs){
+	public static boolean selectDataSetsGUI(ArrayList<File> fragDirs){
 		boolean done = false;
 		
 		//Create a JFileChooser to allow the user to navigate to the select data set directory
@@ -75,7 +166,7 @@ public class ArffGenerator {
 	 * @param theBoxes
 	 * @return 
 	 */
-	public static ArrayList<String> createAttributes(ArrayList<String> arffFile,  ArrayList<File> fragDirs, ArrayList<JCheckBox> theBoxes, int granularity){
+	public static ArrayList<String> createAttributesGUI(ArrayList<String> arffFile,  ArrayList<File> fragDirs, ArrayList<JCheckBox> theBoxes, int granularity){
 		
 		//Add in a file about the fileName (key attribute) -- will be removed from within weka
 		arffFile.add("@ATTRIBUTE fName string");
@@ -119,7 +210,7 @@ public class ArffGenerator {
 	 * Calculates each of the Attributes selected
 	 * @param theBoxes - a list of JCheckBoxes containing the possible attributes.
 	 */
-	public static String calcAttributes(File f, ArrayList<JCheckBox> theBoxes, int granularity){
+	public static String calcAttributesGUI(File f, ArrayList<JCheckBox> theBoxes, int granularity){
 		//Get the name of the file (key)
 		String result = new String();
 		
@@ -148,11 +239,6 @@ public class ArffGenerator {
 					//Set the feature
 					feature = new TotalFeature();
 				}
-				//Same as totalFeature but in %
-//				else if (name.equalsIgnoreCase("PercentageFeature")){
-//					//Set the feature
-//					feature = new PercentageFeature();
-//				}
 				else if (name.equalsIgnoreCase("TotalAgeFeature")){
 					//Set the feature
 					feature = new TotalAgeFeature();

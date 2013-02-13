@@ -21,11 +21,14 @@ public class Fragmenter {
 	
 	public static int fragmentSize = 0;
 	public static int numOfFrags = 0;
-	public static int fragCounter = 1;
+	//public static int fragCounter = 1;
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+		
+		int fragCounter = 1;
+		
 		// Ask the user if they want to fragment specific file/s or an entire directory..
 		Object[] options = {"Directory", "File"};
 		int answer = JOptionPane.showOptionDialog(null, "Fragment Directory or File/s?", "Information", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
@@ -229,6 +232,136 @@ public class Fragmenter {
 		//Notify User if the number of fragments was less than the number s/he wanted.
 		if(fragCounter < numOfFrags) {
 			System.out.println("Notice: Not enough files to reach goal number of fragments...");
+		}
+		
+		//Fragmenting is completed!
+		System.out.println("Fragmentation Complete");
+	}
+	
+	/**
+	 * This is a streamline version of the fragmenter program. It runs via DataCruncher
+	 * folder, numberofFrags, type, sizeOfFrags, booleanDeleteOld
+	 */
+	public static void fragmenterCL(String fName, int numberOfFrags, String type, int size, boolean deleteOld){
+		//Starts the program in the specific directory
+		String directory = "H://SVM/" + fName;
+		File dir = new File(directory);
+		File[] files = null;
+		numOfFrags = numberOfFrags;
+		fragmentSize = size;
+		int fragCounter = 1;
+		
+		//Ok they've selected something, get what they've selected.
+		//it's a directory so grab all ONLY files (no directories) inside of the directory
+
+		if(dir.isDirectory()){
+			//Get a list of all the files/directories inside the directory
+			File[] listOfFiles = dir.listFiles();
+			ArrayList<File> tempFileHolder = new ArrayList<File>();
+			//Remove all directories
+			for(File f : listOfFiles){
+				if(!f.isDirectory()){
+					tempFileHolder.add(f);
+				}
+			}
+			//Add the just the files (no directories) into the list of selected files.
+			files = new File[tempFileHolder.size()];
+			for(int i = 0; i < tempFileHolder.size(); i++){
+				files[i] = tempFileHolder.get(i);
+			}
+		}
+		else{
+			//Otherwise something went wrong...
+			System.out.println("Directory not selected");
+		}
+		
+		//Create a Directory to put the file fragments, naming fragment starts at 1
+		File output = new File(files[0].getParentFile() + "\\Fragmented");
+		
+		//Check to see if the directory exists...
+		//If not, make it.
+		if(!output.isDirectory()){
+			output.mkdirs();
+		} 
+		//If it does exist, then see if the user wants to delete old frags?
+		else if(output.isDirectory()){		
+			//Delete files in Directory
+			if(deleteOld){
+				System.out.println("Deleting Old Fragments... (please be patient)");
+				//Empty the folder
+				File[] fileList = output.listFiles();
+				for(File myFile : fileList){
+					//Delete only non-directories...
+					if(!myFile.isDirectory()){
+						myFile.delete();
+					}
+				}
+			}
+			//Leave the current fragments alone and start off numbering where you left off.
+			else {
+				//Grab all the files
+				File[] theFragments = output.listFiles();
+				//Arrays.sort(theFragments);
+				
+				ArrayList<Integer> theNums = new ArrayList<Integer>();
+				//Get all the files' indexes
+				for(File f : theFragments){
+					String name = f.getName();
+					String lastNum = name.substring(4, name.length());
+					theNums.add(Integer.parseInt(lastNum));
+				}
+				
+				//Sort the list lowest to greatest
+				Collections.sort(theNums);
+				
+				//Set the counter to the next available index
+				fragCounter = theNums.get(theNums.size()-1) + 1;
+				//System.out.println("Next frag = " + fragCounter);
+				
+			}
+		}
+		else {
+			//Something went wrong
+			throw new IllegalArgumentException("Output directory is not a directory!");
+		}	
+			
+		//Iterate through the files the user wants to fragment, name them fragment + (fragCounter - aka wherever the last filename left off);
+		int i = 1;
+		for(File f : files){
+			//Check to see if we've reach the number of fragments the user wants:
+			if(fragCounter < numOfFrags+1){
+				System.out.println("Fragmenting file #" + i);
+				System.out.println("Input: " + f.getAbsolutePath());
+				System.out.println("Output: " + f.getParentFile() + "\\Fragmented");
+				int temp = 0;
+				//Determine how the user selected to fragment the file.
+				if(type.equals("Whole File")) {
+					System.out.println("User selected to fragment whole file");
+					temp = fragmentFiles(f, output, fragCounter);
+				} else if(type.equals("Header Fragments")) {
+					System.out.println("User selected to fragment header fragments from the file");
+					temp = fragmentHeaders(f, output, fragCounter);
+					System.out.println("temp finished!");
+				} else if(type.equals("Mid Fragments")) {
+					System.out.println("User selected to fragment middle fragments from the file");
+					temp = fragmentMids(f, output, fragCounter);
+				} else if (type.equals("Footer Fragments")) {
+					System.out.println("User selected to fragment footers fragments from the file");
+					temp = fragmentFooters(f, output, fragCounter);
+				} else {
+					System.err.println("Error: User didn't specify how to fragment file");
+				}
+				fragCounter = temp;
+				i++;
+			} else {
+				//Do nothing, we've reach the number of fragments we needed!
+			}
+		}
+		
+		//Notify User if the number of fragments was less than the number s/he wanted.
+		if(fragCounter < numOfFrags) {
+			System.out.println("Notice: Not enough files to reach goal number of fragments...");
+			//TODO notify the original program to change the totalNumberOfFrags...
 		}
 		
 		//Fragmenting is completed!

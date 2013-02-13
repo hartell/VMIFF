@@ -24,37 +24,161 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 
 /**
- * This class will use the output from the matrix generator to analyse the data with Weka
+ * This class will use the output from the matrix generator to analyze the data with Weka
  * @author hartell
  *
  */
 public class DataCruncher {
 
-	private static ArrayList<File> fragDirs;
-	private static ArrayList<String> arffFile;
-	private static ArrayList<Instance> instances;
 	private static int granularity = 1;
-	private static String rName = "";
+	private static boolean useGUI = true;
+
+	public static void main(String[] args){
+		//If the user wants to use the gui....
+		if(useGUI){
+			getCrunchyGUI();
+		} else {
+			//Format [group types], [group2 types]:nameOfFile:numberFragsPerGroup:Type:SizeOfFrags:DeleteOldFrags:[Features]
+			//Example: [PDF],[GIF DOC]:PdfVsGifDoc:5000:[TotalPoints TotalAge]
+			
+			//Read in text file: 
+			String test = "[PDF],[PPT]:PdfVsPpt:100:Mid Fragments:512:true:[TotalPointsFeature TotalAgeFeature]";
+			
+			//Split the line by ":" marker into seven sections (folders, filename, numberofFrags, type, sizeOfFrags, booleanDeleteOld, features).
+			String[] section = test.split(":");
+			
+			//For each section
+			String[] groups = getFolderNames(section[0]);
+			String fileName = section[1];
+			int numOfFrags = Integer.parseInt(section[2]);
+			String typeOfFrag = section[3];
+			int sizeOfFrag = Integer.parseInt(section[4]);
+			boolean deleteOld = Boolean.parseBoolean(section[5]);
+			String[] features = getFeatures(section[6]);
+			
+			//Use Fragmenter to fragment the files!
+			for(String name : groups){
+				//Split on space
+				String[] folders = name.split(" ");
+				numOfFrags = numOfFrags / folders.length;
+				for(String f : folders){
+					System.out.println("Preparing to fragment: " + f);
+					Fragmenter.fragmenterCL(f, numOfFrags, typeOfFrag, sizeOfFrag, deleteOld);
+					System.out.println("");
+				}
+			}
+			
+			//TODO for all the lines in the script
+			
+			//Now files are fragmented we just need to add them to the dataset
+			//Build their dataSets by adding fragmented Files
+			//ArrayList<File> fragDirs = ArffGenerator.selectDataSets(groups);
+			ArrayList<String> arffFile = new ArrayList<String>();
+			ArrayList<Instance> instances = new ArrayList<Instance>();
+			
+			//Ask users what they want this relation called (@relation)
+			String rName = fileName;
+			arffFile.add("@RELATION " + rName);
+			arffFile.add(" ");
+			
+			//Determine the features:
+			//Create the @Attributes section of Arff file, with a specified granularity
+			arffFile = ArffGenerator.createAttribute(arffFile, groups.length, features, granularity);
+			
+			
+			ArffGenerator.makeArffFile(rName, arffFile);
+			
+			//For each group:
+			for(int j = 0; j < groups.length; j ++){
+				String[] folders = groups[j].split(" ");
+				System.out.println("Group:" + groups[j]);
+				//For each folder in that group
+				for(String folder : folders){
+					System.out.println("Folder: H://SVM/" + folder + "/Fragmented");
+					//Get all the files
+					File dir = new File("H://SVM/" + folder + "/Fragmented");
+					File[] files = dir.listFiles();
+					
+					//Go through all the files
+					for (int i = 0; i < files.length; i++) {
+						File f = files[i];
+						//Get the metrics, given the features, and granularity
+						String result = ArffGenerator.calcAttributes(f, features, granularity);
+						System.out.println("Result = " + result);
+						int dirNum = j+1;
+
+						//Add it to the Arff File
+						arffFile.add(f.getName() + "," + result + dirNum);
+
+						//Create the instance from the result;
+						String[] stringData = result.split(",");
+						double[] data = new double[stringData.length];
+
+						for(int m = 0; m < stringData.length; m++){
+							data[m] = Double.parseDouble(stringData[m]);
+							//System.out.println("adding " + stringData[m]);
+						}
+						instances.add(new DenseInstance(data, dirNum));
+					}
+				}
+
+			}
+			
+			//Write out the newly created Arff file
+			ArffGenerator.makeArffFile(rName, arffFile);	
+			
+			//Create a dataset from all the instances
+			System.out.println("Making dataset...");
+			Dataset data = makeDataSet(instances);
+
+			//Run a classifier
+			//runRandomForestClassifier(data, arffFile, rName);
+			//runNaiveBaysClassifier(data, arffFile, rName);
+			runJ48Classifier(data, arffFile, rName);		
+		}
+	}
+	
+	private static String[] getFeatures(String f) {
+		//First we need the directory, and remove the brackets
+		String[] features = f.split(" ");
+		for(int i = 0; i < features.length; i++){
+			features[i] = features[i].replace("[", "");
+			features[i] = features[i].replace("]", "");
+		}
+		return features;
+	}
 
 	/**
-	 * @param args
+	 * Gets the folder names from the given string
+	 * @param fNames - the section containing all the file names to fragment
+	 * @return
 	 */
-	public static void main(String[] args) {
+	private static String[] getFolderNames(String fNames) {
+		//First we need the directory, and remove the brackets
+		String[] folderNames = fNames.split(",");
+		for(int i = 0; i < folderNames.length; i++){
+			folderNames[i] = folderNames[i].replace("[", "");
+			folderNames[i] = folderNames[i].replace("]", "");
+		}
+		return folderNames;
+	}
+
+	public static void getCrunchyGUI() {
 		System.out.println("Please select a dataset to load...");
 
 		//Declare Globals
-		fragDirs = new ArrayList<File>();
-		arffFile = new ArrayList<String>();
-		instances = new ArrayList<Instance>();
+		ArrayList<File> fragDirs = new ArrayList<File>();
+		ArrayList<String> arffFile = new ArrayList<String>();
+		ArrayList<Instance> instances = new ArrayList<Instance>();
 
 		//Ask the user to build their dataSets by adding fragmented Files
 		boolean done = false;
 		while(!done){
-			done = ArffGenerator.selectDataSets(fragDirs);
+			done = ArffGenerator.selectDataSetsGUI(fragDirs);
 		}
 
 		//Ask users what they want this relation called (@relation)
-		rName = JOptionPane.showInputDialog("Name of Relation?");
+		String rName = JOptionPane.showInputDialog("Name of Relation?");
 		arffFile.add("@RELATION " + rName);
 		arffFile.add(" ");
 
@@ -73,7 +197,7 @@ public class DataCruncher {
 		JOptionPane.showOptionDialog(null, params, "Available attributes:", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"OK"}, "default");
 
 		//Create the @Attributes section of Arff file, with a specified granularity
-		arffFile = ArffGenerator.createAttributes(arffFile, fragDirs, theBoxes, granularity);
+		arffFile = ArffGenerator.createAttributesGUI(arffFile, fragDirs, theBoxes, granularity);
 
 		// Run the metrics on the file
 		// For each directory of fragments...
@@ -86,7 +210,7 @@ public class DataCruncher {
 				// Grab each file
 				File f = files[j];
 				// Get the metrics: from the file f, with the all the attrib in theBoxes, from directory i
-				String result = ArffGenerator.calcAttributes(f, theBoxes, granularity);
+				String result = ArffGenerator.calcAttributesGUI(f, theBoxes, granularity);
 				int dirNum = i+1;
 				arffFile.add(f.getName() + "," + result + dirNum);
 				//Create the instance from the result;
@@ -105,9 +229,9 @@ public class DataCruncher {
 		Dataset data = makeDataSet(instances);
 
 		//Run a classifier
-		//runRandomForestClassifier(data);
-		//runNaiveBaysClassifier(data);
-		runJ48Classifier(data);
+		//runRandomForestClassifier(data, arffFile, rName);
+		//runNaiveBaysClassifier(data, arffFile, rName);
+		runJ48Classifier(data, arffFile, rName);
 
 		//Write out the newly created Arff file
 		ArffGenerator.makeArffFile(rName, arffFile);
@@ -117,7 +241,7 @@ public class DataCruncher {
 	 * This will attempt to classifier the data using the J48 decision tree
 	 * @param data
 	 */
-	private static void runJ48Classifier(Dataset data) {
+	private static void runJ48Classifier(Dataset data, ArrayList<String> arffFile, String rName) {
 		//Build a classifier
 		J48 j48 = new J48();
 		Classifier nBays = new WekaClassifier(j48);
@@ -131,7 +255,7 @@ public class DataCruncher {
 		Map<Object, PerformanceMeasure> map = cv.crossValidation(data);
 
 		//Print the results:
-		outputResults(map);
+		outputResults(map, arffFile, rName);
 		
 	}
 
@@ -140,7 +264,7 @@ public class DataCruncher {
 	 * @param data
 	 */
 	@SuppressWarnings("unused")
-	private static void runNaiveBaysClassifier(Dataset data) {
+	private static void runNaiveBaysClassifier(Dataset data, ArrayList<String> arffFile, String rName) {
 		//Build a classifier
 		NaiveBayes naiveBays = new NaiveBayes();
 		Classifier nBays = new WekaClassifier(naiveBays);
@@ -154,7 +278,7 @@ public class DataCruncher {
 		Map<Object, PerformanceMeasure> map = cv.crossValidation(data);
 
 		//Print the results:
-		outputResults(map);
+		outputResults(map, arffFile, rName);
 	}
 
 
@@ -164,7 +288,7 @@ public class DataCruncher {
 	 * @param data
 	 */
 	@SuppressWarnings("unused")
-	private static void runRandomForestClassifier(Dataset data) {
+	private static void runRandomForestClassifier(Dataset data, ArrayList<String> arffFile, String rName) {
 		//Build Classifier
 		System.out.println("Building Classifier...");
 		Classifier randForest = new RandomForest(10);
@@ -178,14 +302,14 @@ public class DataCruncher {
 		Map<Object, PerformanceMeasure> map = cv.crossValidation(data);
 
 		//Print the results:
-		outputResults(map);
+		outputResults(map, arffFile, rName);
 	}
 	
 	/**
 	 * Prints stats for the classifier
 	 * @param map - the results of the states
 	 */
-	private static void outputResults(Map<Object, PerformanceMeasure> map) {
+	private static void outputResults(Map<Object, PerformanceMeasure> map, ArrayList<String> arffFile, String rName) {
 		
 		ArrayList<Double> tpRates = new ArrayList<Double>();
 		

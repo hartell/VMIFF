@@ -36,9 +36,9 @@ import weka.classifiers.trees.J48;
  */
 public class DataCruncher {
 
-	private static int granularity = 1;
+	private static int granularity = 4;
 	private static boolean useGUI = false;
-	private static String reportName = "OneToMany";
+	private static String reportName = "Test";
 	private static BufferedWriter out;
 	private static FileWriter fStream;
 
@@ -102,22 +102,22 @@ public class DataCruncher {
 		String[] groups = getFolderNames(section[0]);
 		String fileName = section[1];
 		int numOfFrags = Integer.parseInt(section[2]);
-		String typeOfFrag = section[3];
-		int sizeOfFrag = Integer.parseInt(section[4]);
-		boolean deleteOld = Boolean.parseBoolean(section[5]);
+		//String typeOfFrag = section[3];
+		//int sizeOfFrag = Integer.parseInt(section[4]);
+		//boolean deleteOld = Boolean.parseBoolean(section[5]);
 		String[] features = getFeatures(section[6]);
 		
-		//Use Fragmenter to fragment the files!
-		for(String name : groups){
-			//Split on space
-			String[] folders = name.split(" ");
-			numOfFrags = numOfFrags / folders.length;
-			for(String f : folders){
-				System.out.println("Preparing to fragment: " + f);
-				Fragmenter.fragmenterCL(f, numOfFrags, typeOfFrag, sizeOfFrag, deleteOld);
-				System.out.println("");
-			}
-		}
+//		//Use Fragmenter to fragment the files!
+//		for(String name : groups){
+//			//Split on space
+//			String[] folders = name.split(" ");
+//			int num = numOfFrags / folders.length;
+//			for(String f : folders){
+//				System.out.println("Preparing to fragment: " + f);
+//				Fragmenter.fragmenterCL(f, num, typeOfFrag, sizeOfFrag, deleteOld);
+//				System.out.println("");
+//			}
+//		}
 		
 		//Now files are fragmented we just need to add them to the dataset
 		//Initialize both arff files and instances
@@ -139,16 +139,15 @@ public class DataCruncher {
 		//For each group:
 		for(int j = 0; j < groups.length; j ++){
 			String[] folders = groups[j].split(" ");
-			//System.out.println("Group:" + groups[j]);
 			//For each folder in that group
 			for(String folder : folders){
-				System.out.println("Folder: H://SVM/" + folder + "/Fragmented");
+				System.out.println("Calculate Attributes for: H://SVM/" + folder + "/Fragmented");
 				//Get all the files
 				File dir = new File("H://SVM/" + folder + "/Fragmented");
 				File[] files = dir.listFiles();
 				
 				//Go through all the files
-				for (int i = 0; i < files.length; i++) {
+				for (int i = 0; i < (numOfFrags / folders.length); i++) {
 					File f = files[i];
 					//Get the metrics, given the features, and granularity
 					String result = ArffGenerator.calcAttributes(f, features, granularity);
@@ -394,17 +393,39 @@ public class DataCruncher {
 				}
 				relation = relation + g;
 			}
+			
+			double accuracy = map.get(1).getAccuracy();
+			double bcr = map.get(1).getBCR();
+			double correlation = map.get(1).getCorrelation();
+			double corrCoefficient = map.get(1).getCorrelationCoefficient();
+			double errorRate = map.get(1).getErrorRate();
+			double q9 = map.get(1).getQ9();
+			double total = map.get(1).getTotal();
+			
 			out.write(relation);
 			out.newLine();
 			out.write("Granularity: " + granularity);
 			out.newLine();
-			out.write("Number of fragments: " + numOfFrags);
+			out.write("Number of fragments: " + numOfFrags + " per type, Total #: " + total);
 			out.newLine();
 			out.write("Fragment Location: " + typeOfFrag);
 			out.newLine();
 			out.write("Fragment Size: " + sizeOfFrag);
 			out.newLine();
 			out.write("Features: " + Arrays.toString(features));
+			out.newLine();
+			
+			out.write("Accuracy: " + accuracy);
+			out.newLine();
+			out.write("BCR: "+ bcr);
+			out.newLine();
+			out.write("Correlation: "+ correlation);
+			out.newLine();
+			out.write("Coefficient: "+ corrCoefficient);
+			out.newLine();
+			out.write("Error Rate: "+ errorRate);
+			out.newLine();
+			out.write("Q9: "+ q9);
 			out.newLine();
 			
 			//Calculate all the things...
@@ -415,35 +436,21 @@ public class DataCruncher {
 				double fPRate = map.get(i).getFPRate();
 				double tNRate = map.get(i).getTNRate();
 				double fNRate = map.get(i).getFNRate();
-				double accuracy = map.get(i).getAccuracy();
-				double bcr = map.get(i).getBCR();
-				double correlation = map.get(i).getCorrelation();
-				double corrCoefficient = map.get(i).getCorrelationCoefficient();
 				double cost = map.get(i).getCost();
-				double errorRate = map.get(i).getErrorRate();
 				double fMeasure = map.get(i).getFMeasure();
 				double precision = map.get(i).getPrecision();
-				double q9 = map.get(i).getQ9();
 				double recall = map.get(i).getRecall();
-				double total = map.get(i).getTotal();
 				
 //				Output all the things:
 				out.write("File type " + i + ": ");
 				out.write("TP Rate: "+ tPRate + ",");
 				out.write("FP Rate: "+ fPRate + ",");
 				out.write("TN Rate: "+ tNRate + ",");
-				out.write("FN Rate: "+ fNRate  + ",");
-				out.write("Accuracy: " + accuracy + ",");
-				out.write("BCR: "+ bcr + ",");
-				out.write("Correlation: "+ correlation + ",");
-				out.write("Coefficient: "+ corrCoefficient + ",");
+				out.write("FN Rate: "+ fNRate + ",");
 				out.write("Cost: "+ cost + ",");
-				out.write("Error Rate: "+ errorRate + ",");
 				out.write("FMeasure: "+ fMeasure + ",");
 				out.write("Precision: "+ precision + ",");
-				out.write("Q9: "+ q9 + ",");
 				out.write("Recall: "+ recall + ",");
-				out.write("Total: "+ total  + ",");
 				//Line Break
 				out.newLine();
 			}
@@ -454,8 +461,6 @@ public class DataCruncher {
 				avgTP = avgTP + d;
 			}
 			avgTP = avgTP / tpRates.size();
-			
-			double total = map.get(1).getTotal();
 			
 			double correctClassifications = total * avgTP;
 			double incorrectClassifications = total - correctClassifications;
@@ -498,6 +503,30 @@ public class DataCruncher {
 			//Write out the name of the relation
 			out.write(arffFile.get(0));
 			out.newLine();
+			
+			double accuracy = map.get(1).getAccuracy();
+			double bcr = map.get(1).getBCR();
+			double correlation = map.get(1).getCorrelation();
+			double corrCoefficient = map.get(1).getCorrelationCoefficient();
+			double errorRate = map.get(1).getErrorRate();
+			double q9 = map.get(1).getQ9();
+			double total = map.get(1).getTotal();
+			
+			out.write("Accuracy: " + accuracy + ",");
+			out.newLine();
+			out.write("BCR: "+ bcr + ",");
+			out.newLine();
+			out.write("Correlation: "+ correlation + ",");
+			out.newLine();
+			out.write("Coefficient: "+ corrCoefficient + ",");
+			out.newLine();
+			out.write("Error Rate: "+ errorRate + ",");
+			out.newLine();
+			out.write("Q9: "+ q9 + ",");
+			out.newLine();
+			out.write("Total: "+ total + ",");
+			out.newLine();
+			
 
 			//Calculate all the things...
 			for(int i = 1; i < 3; i++){
@@ -507,17 +536,11 @@ public class DataCruncher {
 				double fPRate = map.get(i).getFPRate();
 				double tNRate = map.get(i).getTNRate();
 				double fNRate = map.get(i).getFNRate();
-				double accuracy = map.get(i).getAccuracy();
-				double bcr = map.get(i).getBCR();
-				double correlation = map.get(i).getCorrelation();
-				double corrCoefficient = map.get(i).getCorrelationCoefficient();
 				double cost = map.get(i).getCost();
-				double errorRate = map.get(i).getErrorRate();
 				double fMeasure = map.get(i).getFMeasure();
 				double precision = map.get(i).getPrecision();
-				double q9 = map.get(i).getQ9();
 				double recall = map.get(i).getRecall();
-				double total = map.get(i).getTotal();
+
 
 				// Output all the things:
 				out.write("File type " + i + ": ");
@@ -525,17 +548,11 @@ public class DataCruncher {
 				out.write("FP Rate: "+ fPRate + ",");
 				out.write("TN Rate: "+ tNRate + ",");
 				out.write("FN Rate: "+ fNRate + ",");
-				out.write("Accuracy: " + accuracy + ",");
-				out.write("BCR: "+ bcr + ",");
-				out.write("Correlation: "+ correlation + ",");
-				out.write("Coefficient: "+ corrCoefficient + ",");
 				out.write("Cost: "+ cost + ",");
-				out.write("Error Rate: "+ errorRate + ",");
 				out.write("FMeasure: "+ fMeasure + ",");
 				out.write("Precision: "+ precision + ",");
-				out.write("Q9: "+ q9 + ",");
 				out.write("Recall: "+ recall + ",");
-				out.write("Total: "+ total + ",");
+				
 				//Line Break
 				out.newLine();
 			}
@@ -546,8 +563,6 @@ public class DataCruncher {
 				avgTP = avgTP + d;
 			}
 			avgTP = avgTP / tpRates.size();
-
-			double total = map.get(1).getTotal();
 
 			double correctClassifications = total * avgTP;
 			double incorrectClassifications = total - correctClassifications;

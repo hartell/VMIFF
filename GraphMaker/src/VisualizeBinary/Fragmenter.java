@@ -22,7 +22,7 @@ public class Fragmenter {
 	public static int fragmentSize = 0;
 	public static int numOfFrags = 0;
 	public static boolean useGUI = false;
-	//public static int fragCounter = 1;
+	public static String newDir = "Problem2-WholeFrags";
 	/**
 	 * @param args
 	 */
@@ -213,7 +213,7 @@ public class Fragmenter {
 								temp = fragmentHeaders(f, output, fragCounter);
 							} else if(howToFrag.equals("Mid Fragments")) {
 								System.out.println("User selected to fragment middle fragments from the file");
-								temp = fragmentMids(f, output, fragCounter);
+								temp = fragmentMids(f, output, fragCounter, i);
 							} else if (howToFrag.equals("Footer Fragments")) {
 								System.out.println("User selected to fragment footers fragments from the file");
 								temp = fragmentFooters(f, output, fragCounter);
@@ -245,8 +245,8 @@ public class Fragmenter {
 	}
 	
 	private static void regenerateFragments() {
-//		fragmenterCL("AVI", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("DOC", 101000, "Mid Fragments", 512, true);
+		fragmenterCL("AVI", 100, "Mid Fragments", 512, true);
+		fragmenterCL("DOC", 2000, "Mid Fragments", 512, true);
 //		fragmenterCL("EXE", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("GIF", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("JPG", 101000, "Mid Fragments", 512, true);
@@ -254,7 +254,7 @@ public class Fragmenter {
 //		fragmenterCL("PDF", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("PPT", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("TXT", 101000, "Mid Fragments", 512, true);
-		fragmenterCL("WAV", 101000, "Mid Fragments", 512, true);
+//		fragmenterCL("WAV", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("WMA", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("WMV", 101000, "Mid Fragments", 512, true);
 //		fragmenterCL("ZIP", 101000, "Mid Fragments", 512, true);
@@ -299,7 +299,8 @@ public class Fragmenter {
 		}
 		
 		//Create a Directory to put the file fragments, naming fragment starts at 1
-		File output = new File(files[0].getParentFile() + "\\Fragmented");
+		//File output = new File(files[0].getParentFile() + "\\Fragmented");
+		File output = new File("H:\\SVM\\" + newDir + "\\" + files[0].getParentFile().getName());
 		
 		//Check to see if the directory exists...
 		//If not, make it.
@@ -324,30 +325,45 @@ public class Fragmenter {
 			else {
 				//Grab all the files
 				File[] theFragments = output.listFiles();
-				//Arrays.sort(theFragments);
-				
-				ArrayList<Integer> theNums = new ArrayList<Integer>();
-				//Get all the files' indexes
-				for(File f : theFragments){
-					String name = f.getName();
-					String lastNum = name.substring(4, name.length());
-					theNums.add(Integer.parseInt(lastNum));
-				}
-				
-				//Sort the list lowest to greatest
-				Collections.sort(theNums);
-				
-				//Set the counter to the next available index
-				fragCounter = theNums.get(theNums.size()-1) + 1;
-				//System.out.println("Next frag = " + fragCounter);
-				
+				fragCounter = theFragments.length + 1;
+				//System.out.println("Next frag = " + fragCounter);						
 			}
 		}
 		else {
 			//Something went wrong
 			throw new IllegalArgumentException("Output directory is not a directory!");
 		}	
-			
+		
+		fragCounter = fragmentForProblem1(files, fragCounter, output, type);
+		//fragCounter = fragmentForProblem2(files, fragCounter, output, type);
+
+		//Notify User if the number of fragments was less than the number s/he wanted.
+		if(fragCounter < numOfFrags) {
+			System.out.println("Notice: Not enough files to reach goal number of fragments...");
+			//TODO notify the original program to change the totalNumberOfFrags...
+		}
+		
+		//Fragmenting is completed!
+		System.out.println("Fragmentation Complete");
+	}
+	
+	
+	
+	@SuppressWarnings("unused")
+	private static int fragmentForProblem2(File[] files, int fragCounter, File output, String type) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * Fragments files for Problem 1 -> identifying the file type of 512 bytes
+	 * @param files
+	 * @param fragCounter
+	 * @param output
+	 * @param type
+	 * @return
+	 */
+	private static int fragmentForProblem1(File[] files, int fragCounter, File output, String type) {	
 		//Iterate through the files the user wants to fragment, name them fragment + (fragCounter - aka wherever the last filename left off);
 		int i = 1;
 		for(File f : files){
@@ -355,7 +371,7 @@ public class Fragmenter {
 			if(fragCounter < numOfFrags+1){
 				System.out.println("Fragmenting file #" + i);
 				System.out.println("Input: " + f.getAbsolutePath());
-				System.out.println("Output: " + f.getParentFile() + "\\Fragmented");
+				System.out.println("Output: " + output);
 				int temp = 0;
 				//Determine how the user selected to fragment the file.
 				if(type.equals("Whole File")) {
@@ -366,7 +382,7 @@ public class Fragmenter {
 					temp = fragmentHeaders(f, output, fragCounter);
 				} else if(type.equals("Mid Fragments")) {
 					System.out.println("User selected to fragment middle fragments from the file");
-					temp = fragmentMids(f, output, fragCounter);
+					temp = fragmentMids(f, output, fragCounter, i);
 				} else if (type.equals("Footer Fragments")) {
 					System.out.println("User selected to fragment footers fragments from the file");
 					temp = fragmentFooters(f, output, fragCounter);
@@ -379,17 +395,9 @@ public class Fragmenter {
 				//Do nothing, we've reach the number of fragments we needed!
 			}
 		}
-		
-		//Notify User if the number of fragments was less than the number s/he wanted.
-		if(fragCounter < numOfFrags) {
-			System.out.println("Notice: Not enough files to reach goal number of fragments...");
-			//TODO notify the original program to change the totalNumberOfFrags...
-		}
-		
-		//Fragmenting is completed!
-		System.out.println("Fragmentation Complete");
+		return fragCounter;
 	}
-	
+
 	/**
 	 * This method fragments a file into fragmentSize bytes sections, but only outputs the first fragmentSize bytes (header).
 	 * @param input - the file to be fragmented
@@ -432,11 +440,12 @@ public class Fragmenter {
 	 * @param input - the file to be fragmented
 	 * @param output - the output location
 	 * @param fragCounter - the last numerical fragment number
+	 * @param i 
 	 * @return int - value of the last file created.
 	 */
-	public static int fragmentMids(File input, File output, int fragCounter){
+	public static int fragmentMids(File input, File output, int fragCounter, int i){
 		//Skip the first fragmentSize bytes (header), the output fragments, skip the last on (footer)
-		int fileCounter = fragCounter;
+		int fileCounter = 1;
 		try {
 			//Create a randomAccessFile to fragment from
 			RandomAccessFile file = new RandomAccessFile(input, "r");
@@ -449,13 +458,14 @@ public class Fragmenter {
 				while(file.getFilePointer()+fragmentSize < file.length()){
 					//Check to make sure we still need fragments!
 					//If the fileCounter < numOfFrags, we need more, so chop them up.
-					if(fileCounter < numOfFrags+1){
+					if(fragCounter < numOfFrags+1){
 						//Read in fragmentSize bytes
 						byte[] buffer = new byte[fragmentSize];
 						file.readFully(buffer);
 						//Output the fragmentSize byte fragment to a incremented file named Fragment + fileCount
-						OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + fileCounter));
+						OutputStream out = new FileOutputStream(new File(output.getAbsolutePath() + File.separatorChar + "Frag" + i + "-" + fileCounter));
 						fileCounter++;
+						fragCounter++;
 						out.write(buffer);
 						out.close();
 					} else {
@@ -471,7 +481,7 @@ public class Fragmenter {
 			e.printStackTrace();
 		}
 		
-		return fileCounter;
+		return fragCounter;
 	}
 	
 	/**

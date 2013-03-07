@@ -245,20 +245,25 @@ public class Fragmenter {
 	}
 	
 	private static void regenerateFragments() {
-		fragmenterCL("AVI", 100, "Mid Fragments", 512, true);
-		fragmenterCL("DOC", 2000, "Mid Fragments", 512, true);
-//		fragmenterCL("EXE", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("GIF", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("JPG", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("MOV", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("PDF", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("PPT", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("TXT", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("WAV", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("WMA", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("WMV", 101000, "Mid Fragments", 512, true);
-//		fragmenterCL("ZIP", 101000, "Mid Fragments", 512, true);
-//		
+//		fragmenterCL("AVI", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("DOC", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("EXE", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("GIF", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("JPG", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("MOV", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("PDF", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("PPT", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("TXT", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("WAV", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("WMA", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("WMV", 100000, "Mid Fragments", 512, true);
+//		fragmenterCL("ZIP", 100000, "Mid Fragments", 512, true);
+		
+		//TESTING
+		fragmenterCL("DOC", 100000, "Mid Fragments", 512, true);
+		fragmenterCL("GIF", 100000, "Mid Fragments", 512, true);
+		fragmenterCL("JPG", 100000, "Mid Fragments", 512, true);
+		fragmenterCL("WAV", 100000, "Mid Fragments", 512, true);
 	}
 
 	/**
@@ -334,8 +339,8 @@ public class Fragmenter {
 			throw new IllegalArgumentException("Output directory is not a directory!");
 		}	
 		
-		fragCounter = fragmentForProblem1(files, fragCounter, output, type);
-		//fragCounter = fragmentForProblem2(files, fragCounter, output, type);
+		//fragCounter = fragmentForProblem1(files, fragCounter, output, type);
+		fragCounter = fragmentForProblem2(files, fragCounter, output, type);
 
 		//Notify User if the number of fragments was less than the number s/he wanted.
 		if(fragCounter < numOfFrags) {
@@ -346,14 +351,6 @@ public class Fragmenter {
 		//Fragmenting is completed!
 		System.out.println("Fragmentation Complete");
 	}
-	
-	
-	
-	@SuppressWarnings("unused")
-	private static int fragmentForProblem2(File[] files, int fragCounter, File output, String type) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	/**
 	 * Fragments files for Problem 1 -> identifying the file type of 512 bytes
@@ -363,6 +360,7 @@ public class Fragmenter {
 	 * @param type
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private static int fragmentForProblem1(File[] files, int fragCounter, File output, String type) {	
 		//Iterate through the files the user wants to fragment, name them fragment + (fragCounter - aka wherever the last filename left off);
 		int i = 1;
@@ -398,6 +396,61 @@ public class Fragmenter {
 		return fragCounter;
 	}
 
+	private static int fragmentForProblem2(File[] files, int fragCounter, File output, String type) {
+		//Iterate through the files the user wants to fragment, name them fragment + (fragCounter - aka wherever the last filename left off);
+		int i = 1;
+		//For each file: 
+		for(File f : files){
+			//Check to see if we've reach the number of fragments the user wants:
+			if(fragCounter < numOfFrags+1){
+				System.out.println("Fragmenting file #" + i);
+				System.out.println("Input: " + f.getAbsolutePath());
+				System.out.println("Output: " + output + " Fragmented\\File" + i);
+				int temp = 0;
+				
+				//Determine if file is large enough to fragment...
+				
+				long size = 0;
+				try {
+					RandomAccessFile file = new RandomAccessFile(f, "r");
+					size = file.length();
+					file.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(size > (512*5)){
+					//Create a folder called Filei
+					File dir = new File(output + "\\File" + i );
+					dir.mkdir();
+					//Determine how the user selected to fragment the file.
+					if(type.equals("Whole File")) {
+						System.out.println("User selected to fragment whole file");
+						temp = fragmentFiles(f, dir, fragCounter);
+					} else if(type.equals("Header Fragments")) {
+						System.out.println("User selected to fragment header fragments from the file");
+						temp = fragmentHeaders(f, dir, fragCounter);
+					} else if(type.equals("Mid Fragments")) {
+						System.out.println("User selected to fragment middle fragments from the file");
+						temp = fragmentMids(f, dir, fragCounter, i);
+					} else if (type.equals("Footer Fragments")) {
+						System.out.println("User selected to fragment footers fragments from the file");
+						temp = fragmentFooters(f, dir, fragCounter);
+					} else {
+						System.err.println("Error: User didn't specify how to fragment file");
+					}
+					fragCounter = temp;
+					i++;
+				} else {
+					//Do nothing, we've reach the number of fragments we needed!
+				}
+			}
+		}
+
+		return fragCounter;
+		
+	}
+	
 	/**
 	 * This method fragments a file into fragmentSize bytes sections, but only outputs the first fragmentSize bytes (header).
 	 * @param input - the file to be fragmented

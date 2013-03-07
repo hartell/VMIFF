@@ -118,6 +118,55 @@ public class ArffGenerator {
 		return result;
 	}
 	
+	public static String calcAttributes2(File f, String[] features, int granularity) {
+		String result = new String();
+		
+		//Get the path of the file
+		Path path = Paths.get(f.getAbsolutePath());
+		//Read in all the bytes of that file
+		byte[] bytes = null;
+		try {
+			bytes = Files.readAllBytes(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//Go through the features and determine which ones to calculate
+		Feature feature = null;
+		for(String name : features){
+			if(name.equalsIgnoreCase("TotalPointsFeature")){
+				//Set the feature
+				feature = new TotalFeature();
+			}
+			else if (name.equalsIgnoreCase("TotalAgeFeature")){
+				//Set the feature
+				feature = new TotalAgeFeature();
+			}
+			else if (name.equalsIgnoreCase("AverageAgeFeature")){
+				//Set the feature
+				feature = new AverageAgeFeature();
+			}
+			else{
+				System.out.println("Error: Feature not recognized!");
+			}
+			
+			//Create the matrix using the feature
+			Matrix m = new Matrix(granularity, bytes, feature);
+			//Return the results of the feature
+			double[][] matrix = m.getMatrix();
+			
+			//Add the feature's result to the arff results
+			for(int k = 0; k < matrix.length; k++){
+				for(int j = 0; j < matrix[k].length; j++){
+					 result = result + matrix[k][j] + ",";
+					 //System.out.println(matrix[k][j]);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Allows the user to select the data sets for the arff file
 	 * 
@@ -272,12 +321,13 @@ public class ArffGenerator {
 	/**
 	 * Generates and saves the Arff File to a predetermined location
 	 * @param name - the name of the arff File
+	 * @param problemName 
 	 */
-	public static void makeArffFile(String name, ArrayList<String> arffFile){
+	public static void makeArffFile(String name, String problemName, ArrayList<String> arffFile){
 		try{
 			//Create a Writer, write each line out to a file.
-			System.out.println("Writing Arrf File to disk");
-			FileWriter fStream = new FileWriter("H://SVM/ARFF/" + name + ".arff");
+			System.out.println("Creating Arrf File");
+			FileWriter fStream = new FileWriter("H://SVM/" + problemName +"/Arff/" + name + ".arff");
 			BufferedWriter out = new BufferedWriter(fStream);
 			for(String s : arffFile){
 				out.write(s);
@@ -285,6 +335,7 @@ public class ArffGenerator {
 			}
 			out.close();
 			fStream.close();
+			System.out.println("Arff file created successfully");
 		}
 		catch(Exception e){
 			e.printStackTrace();

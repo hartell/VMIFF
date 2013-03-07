@@ -6,6 +6,7 @@ package VisualizeBinary;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,8 +37,10 @@ import weka.classifiers.trees.J48;
  */
 public class DataCruncher {
 
-	private static int granularity = 4;
+	private static int granularity = 1;
 	private static boolean useGUI = false;
+	private static boolean generateReport = false;
+	private static String problemName = "Problem2-WholeFrags";
 	private static String reportName = "Test";
 	private static BufferedWriter out;
 	private static FileWriter fStream;
@@ -52,14 +55,15 @@ public class DataCruncher {
 			try{
 				String line;
 				br = new BufferedReader(new FileReader("H:\\SVM\\Reports\\" + reportName + ".txt"));
-				fStream = new FileWriter("H://SVM/Reports/" + reportName + "Report.csv");
-				out = new BufferedWriter(fStream);
+				if(generateReport) {fStream = new FileWriter("H://SVM/Reports/" + reportName + "Report.csv");}
+				if(generateReport) {out = new BufferedWriter(fStream);}
 				//Split each line, fragment and output the results
 				while((line = br.readLine())!= null){
 					//Split the line by ":" marker into seven sections (folders, filename, numberofFrags, type, sizeOfFrags, booleanDeleteOld, features).
 					String[] section = line.split(":");
 					//Calculate the fragments and output the results of the test to a csv
-					calculateResults(section);
+					//calculateResults1(section);
+					calculateResults2(section);
 				}
 			}
 			catch (IOException e){
@@ -73,18 +77,20 @@ public class DataCruncher {
 						e.printStackTrace();
 					}
 				}
-				if(out != null){
-					try {
-						out.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+				if(generateReport){
+					if(out != null){
+						try {
+							out.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
-				}
-				if(fStream != null){
-					try {
-						fStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+					if(fStream != null){
+						try {
+							fStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -97,7 +103,8 @@ public class DataCruncher {
 	 * Example: [PDF],[JPG GIF]:PdfVsJpgGif:100:Mid Fragments:512:true:[TotalPointsFeature TotalAgeFeature]
 	 * @param section - the command
 	 */
-	private static void calculateResults(String[] section) {	
+	@SuppressWarnings("unused")
+	private static void calculateResults1(String[] section) {	
 		//For each section
 		String[] groups = getFolderNames(section[0]);
 		String fileName = section[1];
@@ -133,17 +140,14 @@ public class DataCruncher {
 		//Create the @Attributes section of Arff file, with a specified granularity
 		arffFile = ArffGenerator.createAttribute(arffFile, groups.length, features, granularity);
 		
-		//Make the arffFile
-		ArffGenerator.makeArffFile(rName, arffFile);
-		
 		//For each group:
 		for(int j = 0; j < groups.length; j ++){
 			String[] folders = groups[j].split(" ");
 			//For each folder in that group
 			for(String folder : folders){
-				System.out.println("Calculate Attributes for: H://SVM/" + folder + "/Fragmented");
+				System.out.println("Calculate Attributes for: H://SVM/" + problemName + "/"+ folder + " Fragmented");
 				//Get all the files
-				File dir = new File("H://SVM/" + folder + "/Fragmented");
+				File dir = new File("H://SVM/" + problemName + "/" + folder + " Fragmented");
 				File[] files = dir.listFiles();
 				
 				//Go through all the files
@@ -157,35 +161,151 @@ public class DataCruncher {
 					//Add it to the Arff File
 					arffFile.add(f.getName() + "," + result + dirNum);
 
-					//Create the instance from the result;
-					String[] stringData = result.split(",");
-					double[] data = new double[stringData.length];
-
-					for(int m = 0; m < stringData.length; m++){
-						data[m] = Double.parseDouble(stringData[m]);
-						//System.out.println("adding " + stringData[m]);
+					if(generateReport){
+						//Create the instance from the result;
+						String[] stringData = result.split(",");
+						double[] data = new double[stringData.length];
+	
+						for(int m = 0; m < stringData.length; m++){
+							data[m] = Double.parseDouble(stringData[m]);
+							//System.out.println("adding " + stringData[m]);
+						}
+						instances.add(new DenseInstance(data, dirNum));
 					}
-					instances.add(new DenseInstance(data, dirNum));
 				}
 			}
 		}
 		
-		//Create a dataset from all the instances
-		System.out.println("Making dataset...");
-		Dataset data = makeDataSet(instances);
-
-		//Run a classifier
-		//runRandomForestClassifier(data);
-		//runNaiveBaysClassifier(data);
-		Map<Object, PerformanceMeasure> map = runJ48Classifier(data);	
-		
-		//Print the results:
-		outputResults(map, arffFile, section);
+		if(generateReport){
+			//Create a dataset from all the instances
+			System.out.println("Making dataset...");
+			Dataset data = makeDataSet(instances);
+	
+			//Run a classifier
+			//runRandomForestClassifier(data);
+			//runNaiveBaysClassifier(data);
+			Map<Object, PerformanceMeasure> map = runJ48Classifier(data);	
+			
+			//Print the results:
+			outputResults(map, arffFile, section);
+		}
 		
 		//Write out the newly created Arff file
-		ArffGenerator.makeArffFile(rName, arffFile);	
+		ArffGenerator.makeArffFile(rName, problemName, arffFile);	
 	}
 
+	/**
+	 * The Command line version of the data Cruncher, reads in commands from a txt file outputs results to a csv
+	 * Format [group types], [group2 types]:nameOfFile:numberFragsPerGroup:Type:SizeOfFrags:DeleteOldFrags:[Features]
+	 * Example: [PDF],[JPG GIF]:PdfVsJpgGif:100:Mid Fragments:512:true:[TotalPointsFeature TotalAgeFeature]
+	 * @param section - the command
+	 */
+	private static void calculateResults2(String[] section) {	
+		//For each section
+		File mainFolder = new File("H://SVM/" + problemName + "/" + getFolderNames(section[0])[0]);
+		System.out.println(mainFolder);
+		String fileName = section[1];
+		String[] features = getFeatures(section[6]);
+		
+		//Now files are already fragmented, so we just need to add them to the dataset
+		//Initialize both arff files and instances
+		ArrayList<String> arffFile = new ArrayList<String>();
+		
+		//Ask users what they want this relation called (@relation)
+		String rName = fileName;
+		arffFile.add("@RELATION " + rName);
+		arffFile.add(" ");
+		
+		//Determine the features:
+		//Create the @Attributes section of Arff file, with a specified granularity
+		arffFile = ArffGenerator.createAttribute(arffFile, 3, features, granularity);
+		
+		//Make a filter to only get directories:
+		FileFilter dirFilter = new FileFilter(){
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory();
+			}
+		};
+		
+		
+		//Get all the folders in that directory
+		File[] folders = mainFolder.listFiles(dirFilter);
+		
+		//For all the folders (filled with fragments)
+		for(File f : folders){
+			//Divide the number of fragments in each folder into three parts..
+			File[] frags = f.listFiles(); //<--- sort this!
+			
+			//We need to sort the frags before we let them be categoried otherwise they will not be sort via natural ordering.
+			String[] fragNames = new String[frags.length];
+			for(int i = 0; i < frags.length; i++){
+				fragNames[i] = frags[i].getName();
+			}
+			Arrays.sort(fragNames, new FileSorter());
+			
+			for(int i = 0; i < frags.length; i++){
+				frags[i] = new File(f + "/" + fragNames[i]);
+				//System.out.println(frags[i]);
+			}
+			
+			int pointer = 0;
+			int position = 1;
+			int numberPerSection = frags.length / 3;
+			
+			for(int i = 0; i < frags.length; i++){
+				if(numberPerSection == pointer){
+					position++;
+					pointer = 0;
+				}
+				//Get the metrics, given the features, and granularity
+				String result = ArffGenerator.calcAttributes2(frags[i], features, granularity);
+				
+				//Deal with leftovers?
+				if(position == 4){
+					position = 3;
+				}
+
+				//System.out.println("Result = " + result);
+				//Add it to the Arff File
+				result = frags[i].getName() + "," + result + position;
+				arffFile.add(result);
+				//System.out.println(result);
+				pointer++;		
+			}
+		}
+		
+		//Write out the newly created Arff file
+		ArffGenerator.makeArffFile(rName, problemName, arffFile);
+		
+//		//For each group:
+//		for(int j = 0; j < groups.length; j ++){
+//			String[] folders = groups[j].split(" ");
+//			//For each folder in that group
+//			for(String folder : folders){
+//				System.out.println("Calculate Attributes for: H://SVM/" + problemName + "/"+ folder + " Fragmented");
+//				//Get all the files
+//				File dir = new File("H://SVM/" + problemName + "/" + folder + " Fragmented");
+//				File[] files = dir.listFiles();
+//				
+//				//Go through all the files
+//				for (int i = 0; i < (numOfFrags / folders.length); i++) {
+//					File f = files[i];
+//					//Get the metrics, given the features, and granularity
+//					String result = ArffGenerator.calcAttributes2(f, features, granularity);
+//					//System.out.println("Result = " + result);
+//					int dirNum = j+1;
+//
+//					//Add it to the Arff File
+//					arffFile.add(f.getName() + "," + result + dirNum);
+//				}
+//			}
+//		}
+//		
+//		//Write out the newly created Arff file
+//		ArffGenerator.makeArffFile(rName, problemName, arffFile);	
+	}
+	
 	/**
 	 * Returns an array of features
 	 * @param f - string of features
@@ -293,7 +413,7 @@ public class DataCruncher {
 		outputResultsGUI(map, arffFile, rName);
 		
 		//Write out the newly created Arff file
-		ArffGenerator.makeArffFile(rName, arffFile);
+		ArffGenerator.makeArffFile(rName, problemName, arffFile);
 	}
 
 	/**

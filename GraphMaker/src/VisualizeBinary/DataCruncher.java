@@ -37,10 +37,10 @@ import weka.classifiers.trees.J48;
  */
 public class DataCruncher {
 
-	private static int granularity = 3;
+	private static int granularity = 1;
 	private static boolean useGUI = false;
 	private static boolean generateReport = false;
-	private static String problemName = "Problem2";
+	private static String problemName = "Problem1";
 	private static String reportName = "Test";
 	private static BufferedWriter out;
 	private static FileWriter fStream;
@@ -141,7 +141,7 @@ public class DataCruncher {
 		
 		//Determine the features:
 		//Create the @Attributes section of Arff file, with a specified granularity
-		arffFile = ArffGenerator.createAttribute(arffFile, groups.length, features, granularity);
+		arffFile = NArffGenerator.createAttribute(arffFile, groups.length, features, granularity);
 		
 		//For each group:
 		for(int j = 0; j < groups.length; j ++){
@@ -157,7 +157,7 @@ public class DataCruncher {
 				for (int i = 0; i < (numOfFrags / folders.length); i++) {
 					File f = files[i];
 					//Get the metrics, given the features, and granularity
-					String result = ArffGenerator.calcAttributes(f, features, granularity);
+					String result = NArffGenerator.calcAttributes(f, features, granularity);
 					//System.out.println("Result = " + result);
 					int dirNum = j+1;
 
@@ -194,7 +194,7 @@ public class DataCruncher {
 		}
 		
 		//Write out the newly created Arff file
-		ArffGenerator.makeArffFile(rName, problemName, arffFile);	
+		NArffGenerator.makeArffFile(rName, problemName, arffFile);	
 	}
 
 	/**

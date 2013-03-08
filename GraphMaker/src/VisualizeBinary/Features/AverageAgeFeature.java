@@ -5,6 +5,7 @@ package VisualizeBinary.Features;
 
 import java.util.ArrayList;
 import VisualizeBinary.Matrix.Point;
+import VisualizeBinary.NMatrix.NPoint;
 
 /**
  * @author hartell
@@ -35,4 +36,18 @@ public class AverageAgeFeature extends Feature {
 		
 		return result;
 	}
+
+	@Override
+	public double computeNFeature(ArrayList<NPoint> points) {
+		double totalAge = 0.0;
+		//Go through all the points and return the total age of the points
+		for(NPoint p : points){
+			totalAge = totalAge + p.getAge();
+		}
+		
+		double result = totalAge / ((double) points.size());
+		
+		return result;
+	}
+	
 }

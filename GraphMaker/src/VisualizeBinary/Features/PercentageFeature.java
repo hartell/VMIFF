@@ -4,7 +4,9 @@
 package VisualizeBinary.Features;
 
 import java.util.ArrayList;
+import com.sun.org.apache.bcel.internal.Constants;
 import VisualizeBinary.Matrix.Point;
+import VisualizeBinary.NMatrix.NPoint;
 
 /**
  * @author hartell
@@ -21,7 +23,12 @@ public class PercentageFeature extends Feature {
 
 	@Override
 	public double computeFeature(ArrayList<Point> points) {
-		return (double)(points.size()) / 256.0;
+		return (double)(points.size()) / Constants.MAX_BYTE;
+	}
+
+	@Override
+	public double computeNFeature(ArrayList<NPoint> points) {
+		return (double)(points.size()) / Constants.MAX_BYTE;
 	}
 
 }

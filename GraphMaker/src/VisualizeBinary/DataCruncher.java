@@ -37,10 +37,10 @@ import weka.classifiers.trees.J48;
  */
 public class DataCruncher {
 
-	private static int granularity = 1;
+	private static int granularity = 3;
 	private static boolean useGUI = false;
 	private static boolean generateReport = false;
-	private static String problemName = "Problem2-WholeFrags";
+	private static String problemName = "Problem2";
 	private static String reportName = "Test";
 	private static BufferedWriter out;
 	private static FileWriter fStream;
@@ -62,8 +62,12 @@ public class DataCruncher {
 					//Split the line by ":" marker into seven sections (folders, filename, numberofFrags, type, sizeOfFrags, booleanDeleteOld, features).
 					String[] section = line.split(":");
 					//Calculate the fragments and output the results of the test to a csv
-					//calculateResults1(section);
-					calculateResults2(section);
+					if(problemName.equals("Problem1")){
+						calculateResults1(section);
+					}
+					if(problemName.equals("Problem2")){
+						calculateResults2(section);
+					}
 				}
 			}
 			catch (IOException e){
@@ -103,7 +107,6 @@ public class DataCruncher {
 	 * Example: [PDF],[JPG GIF]:PdfVsJpgGif:100:Mid Fragments:512:true:[TotalPointsFeature TotalAgeFeature]
 	 * @param section - the command
 	 */
-	@SuppressWarnings("unused")
 	private static void calculateResults1(String[] section) {	
 		//For each section
 		String[] groups = getFolderNames(section[0]);

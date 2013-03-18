@@ -56,7 +56,7 @@ public class BinaryReader {
 		addGraphPanel();
 		
 		//Add Navigation Panel
-		addNavigationPanel();
+		//addNavigationPanel();
 		
 		//Now that all the components are added, revalidate them.
 		frame.validate();

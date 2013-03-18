@@ -1,7 +1,7 @@
 /**
  * 
  */
-package VisualizeBinary;
+package VisualizeBinary.Visualizer;
 
 import java.awt.Component;
 import org.jzy3d.chart.Chart;

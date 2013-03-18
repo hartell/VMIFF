@@ -1,4 +1,4 @@
-package VisualizeBinary;
+package VisualizeBinary.Visualizer;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

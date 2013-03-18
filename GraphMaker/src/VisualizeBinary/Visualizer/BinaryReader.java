@@ -1,4 +1,4 @@
-package VisualizeBinary;
+package VisualizeBinary.Visualizer;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;

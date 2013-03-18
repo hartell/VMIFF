@@ -38,9 +38,10 @@ import weka.classifiers.trees.J48;
 public class DataCruncher {
 
 	private static int granularity = 1;
+	private static int dimensions = 4;
 	private static boolean useGUI = false;
 	private static boolean generateReport = false;
-	private static String problemName = "Problem1";
+	private static String problemName = "Problem2";
 	private static String reportName = "Test";
 	private static BufferedWriter out;
 	private static FileWriter fStream;
@@ -157,7 +158,7 @@ public class DataCruncher {
 				for (int i = 0; i < (numOfFrags / folders.length); i++) {
 					File f = files[i];
 					//Get the metrics, given the features, and granularity
-					String result = NArffGenerator.calcAttributes(f, features, granularity);
+					String result = NArffGenerator.calcAttributes(dimensions, f, features, granularity);
 					//System.out.println("Result = " + result);
 					int dirNum = j+1;
 
@@ -221,7 +222,7 @@ public class DataCruncher {
 		
 		//Determine the features:
 		//Create the @Attributes section of Arff file, with a specified granularity
-		arffFile = ArffGenerator.createAttribute(arffFile, 3, features, granularity);
+		arffFile = NArffGenerator.createAttribute(arffFile, 3, features, granularity);
 		
 		//Make a filter to only get directories:
 		FileFilter dirFilter = new FileFilter(){
@@ -262,7 +263,7 @@ public class DataCruncher {
 					pointer = 0;
 				}
 				//Get the metrics, given the features, and granularity
-				String result = ArffGenerator.calcAttributes2(frags[i], features, granularity);
+				String result = NArffGenerator.calcAttributes2(dimensions, frags[i], features, granularity);
 				
 				//Deal with leftovers?
 				if(position == 4){
@@ -279,7 +280,7 @@ public class DataCruncher {
 		}
 		
 		//Write out the newly created Arff file
-		ArffGenerator.makeArffFile(rName, problemName, arffFile);
+		NArffGenerator.makeArffFile(rName, problemName, arffFile);
 		
 //		//For each group:
 //		for(int j = 0; j < groups.length; j ++){

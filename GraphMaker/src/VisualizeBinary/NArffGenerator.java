@@ -72,7 +72,7 @@ public class NArffGenerator {
 		return arffFile;
 	}
 	
-	public static String calcAttributes(File f, String[] features, int granularity) {
+	public static String calcAttributes(int dimensions, File f, String[] features, int granularity) {
 		String result = new String();
 		
 		//Get the path of the file
@@ -105,7 +105,7 @@ public class NArffGenerator {
 			}
 			
 			//Create the matrix using the feature
-			NMatrix m = new NMatrix(2, granularity, bytes, feature);
+			NMatrix m = new NMatrix(dimensions, granularity, bytes, feature);
 			//Return the results of the feature
 			TreeMap<NCoordinates, Double> matrix = m.getMatrix();
 			
@@ -117,7 +117,7 @@ public class NArffGenerator {
 		return result;
 	}
 	
-	public static String calcAttributes2(File f, String[] features, int granularity) {
+	public static String calcAttributes2(int dimensions, File f, String[] features, int granularity) {
 		String result = new String();
 		
 		//Get the path of the file
@@ -150,7 +150,7 @@ public class NArffGenerator {
 			}
 			
 			//Create the matrix using the feature
-			NMatrix m = new NMatrix(2, granularity, bytes, feature);
+			NMatrix m = new NMatrix(dimensions, granularity, bytes, feature);
 			//Return the results of the feature
 			TreeMap<NCoordinates, Double> matrix = m.getMatrix();
 			
@@ -254,7 +254,7 @@ public class NArffGenerator {
 	 * Calculates each of the Attributes selected
 	 * @param theBoxes - a list of JCheckBoxes containing the possible attributes.
 	 */
-	public static String calcAttributesGUI(File f, ArrayList<JCheckBox> theBoxes, int granularity){
+	public static String calcAttributesGUI(int dimensions, File f, ArrayList<JCheckBox> theBoxes, int granularity){
 		//Get the name of the file (key)
 		String result = new String();
 		
@@ -296,7 +296,7 @@ public class NArffGenerator {
 				}
 				//ADD MORE ATTRIBUTES HERE!!!!
 				//Create the matrix using the feature
-				NMatrix m = new NMatrix(2, granularity, bytes, feature);
+				NMatrix m = new NMatrix(dimensions, granularity, bytes, feature);
 				//Return the results of the feature
 				TreeMap<NCoordinates, Double> matrix = m.getMatrix();
 				

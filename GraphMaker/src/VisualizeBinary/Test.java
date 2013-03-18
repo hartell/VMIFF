@@ -32,8 +32,8 @@ public class Test {
 		byte[] bytes = new byte[Constants.BLOCK_SIZE];
 		new Random().nextBytes(bytes);
 		
-		Matrix matrixA = new Matrix(1, bytes, new TotalFeature());
-		NMatrix matrixB = new NMatrix(2, 1, bytes, new TotalFeature());
+		Matrix matrixA = new Matrix(2, bytes, new TotalFeature());
+		NMatrix matrixB = new NMatrix(4, 2, bytes, new TotalFeature());
 		
 		System.out.println("2D Matrix: ");
 		

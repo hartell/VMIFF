@@ -27,7 +27,7 @@ public class NTable {
     }
 	
     public static void main(String[] args) {
-    	int numDimensions = 3;
+    	int numDimensions = 2;
     	int range = 4;
     	Collection<NCoordinates> grainBucket = allNCoordinates(numDimensions, range).keySet();
     	
